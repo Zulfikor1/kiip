@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIIP 사회통합프로그램 — 시험 공부 자료</title>
+<style>
+  :root{
+    --bg:#0f1320; --card:#1a2032; --card2:#222a40; --accent:#4f9cff; --accent2:#ffcf4f;
+    --text:#e8ecf5; --muted:#9aa6c2; --good:#3ddc84; --bad:#ff6b6b; --line:#2e3854;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
+  header{position:sticky;top:0;z-index:50;background:linear-gradient(90deg,#1a2750,#222a40);
+    padding:14px 18px;border-bottom:1px solid var(--line);box-shadow:0 2px 14px rgba(0,0,0,.4)}
+  header h1{margin:0;font-size:18px}
+  header p{margin:3px 0 0;color:var(--muted);font-size:13px}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tabs button{background:var(--card2);color:var(--text);border:1px solid var(--line);
+    padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px}
+  .tabs button.active{background:var(--accent);border-color:var(--accent);color:#06122a;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:18px}
+  .search{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--text);font-size:15px;margin-bottom:16px}
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden}
+  details[open]{box-shadow:0 4px 16px rgba(0,0,0,.25)}
+  summary{cursor:pointer;padding:14px 16px;font-weight:700;font-size:16px;list-style:none;
+    display:flex;align-items:center;gap:10px;background:var(--card2)}
+  summary::-webkit-details-marker{display:none}
+  summary .num{background:var(--accent);color:#06122a;border-radius:7px;padding:2px 9px;font-size:13px;font-weight:800;min-width:30px;text-align:center}
+  .body{padding:6px 18px 16px}
+  .body ul{margin:8px 0;padding-left:20px}
+  .body li{margin:5px 0}
+  .body .k{color:var(--accent2);font-weight:700}
+  .body .hl{color:var(--accent);font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:var(--card2);color:var(--accent2)}
+  .cat{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:26px 0 6px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  /* Quiz */
+  #quiz{display:none}
+  .qcontrols{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  .qcontrols select,.qcontrols button{padding:9px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card2);color:var(--text);font-size:14px;cursor:pointer}
+  .qcontrols button.primary{background:var(--accent);color:#06122a;font-weight:700;border-color:var(--accent)}
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+  .qnum{color:var(--muted);font-size:13px}
+  .qtext{font-weight:700;margin:6px 0 12px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;padding:11px 14px;margin:7px 0;border-radius:10px;
+    border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-size:15px}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:rgba(61,220,132,.18);border-color:var(--good)}
+  .opt.wrong{background:rgba(255,107,107,.16);border-color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .expl{margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--card2);font-size:14px;color:var(--muted);display:none}
+  .expl.show{display:block}
+  .score{position:sticky;bottom:0;background:var(--card2);border-top:1px solid var(--line);
+    padding:12px 18px;text-align:center;font-weight:700;font-size:16px}
+  .scrollbtn{position:fixed;right:16px;bottom:70px;background:var(--accent);color:#06122a;border:none;
+    width:46px;height:46px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .note{font-size:13px;color:var(--muted);margin-top:4px}
+  .pill{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:12px;margin:2px 3px 2px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>📘 KIIP 사회통합프로그램 — 시험 공부 자료</h1>
+  <p>한국 사회·정치·경제·법·역사·지리 총정리 + 자가 테스트 · O'qish va test bir joyda</p>
+  <div class="tabs">
+    <button id="tab-study" class="active" onclick="showTab('study')">📖 공부 (Darslik)</button>
+    <button id="tab-quiz" onclick="showTab('quiz')">📝 테스트 (Test)</button>
+  </div>
+</header>
+
+<div class="wrap">
+<!-- ===================== STUDY ===================== -->
+<section id="study">
+  <input class="search" id="search" placeholder="🔎 검색 / Qidirish (예: 삼권분립, 명절, 고려, 제주...)" oninput="filterStudy()">
+
+  <div class="cat">PART 1 · 한국 사회 (Jamiyat)</div>
+
+  <details open><summary><span class="num">1</span>한국의 상징</summary><div class="body">
+    <ul>
+      <li>공식 <span class="k">국가명</span>: 대한민국 (Republic of Korea)</li>
+      <li><span class="k">상징 4가지</span>:
+        <ul>
+          <li><span class="hl">국기</span> – 태극기 (평화와 화합): 흰색, 태극, 4괘, 국가문장</li>
+          <li><span class="hl">국가(노래)</span> – 애국가: 나라를 사랑하는 노래, 4절</li>
+          <li><span class="hl">국화(꽃)</span> – 무궁화: 끝이 없이 계속 피는 꽃 (국가문장 = 무궁화+태극)</li>
+          <li><span class="hl">문자</span> – 한글 (훈민정음): 세종대왕, 모음(천지인 10개)+자음(발음기관 14개). 백성들이 쉬운 글자를 알도록 만듦. <span class="k">한글날 10월 9일</span>. 세종대왕 = 유네스코, 문맹퇴치</li>
+        </ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">2</span>한국의 일터 (일하는 곳)</summary><div class="body">
+    <ul>
+      <li>선호하는 일터: 공무원, 공기업, 대기업</li>
+      <li>노동 시작 나이: 만 <span class="hl">15세</span>부터 (이때 일하는 사람은 적다)</li>
+      <li>일 시작 나이: 고졸 후 20대, 대졸 후 20대 중반 / 은퇴: 60대 전후</li>
+      <li>은퇴 후에도 일함: 자아실현, 사회공헌, 경제적 이유</li>
+      <li>일하는 시간: 오전 9시~오후 6시 (8시간)</li>
+      <li><span class="k">주 5일제</span>: 5×8=40시간 기본 +12시간 추가 = <span class="hl">52시간</span></li>
+      <li>남자 &gt; 여자 (여자도 일하는 비율 높아짐 → 맞벌이 늘어남)</li>
+      <li>출산·육아로 여성 경력 단절 → 재취업·창업 정책 시행</li>
+      <li>24시간 근무: 경찰, 병원, 소방소 (교대근무)</li>
+      <li><span class="k">정규 근무</span>: 주5일제 40시간 ↔ <span class="k">탄력 근무</span>: 일이 많을 때 더 일하는 것</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">3</span>가족</summary><div class="body">
+    <ul>
+      <li>결혼 연령이 점점 높아짐. 과거 <span class="hl">확대가족</span> → 현재 <span class="hl">핵가족</span>(부모+미혼 자녀). 1인 가구·부부만 사는 가구 증가</li>
+      <li>가족 문화: 유교·효 사상의 영향 → 가족 간 서열·역할. 사회 변동으로 가치관 변화</li>
+      <li><span class="k">호칭</span>: 부부=여보·당신 / 남편의 부모=시아버지·시어머니 / 아내의 부모=장인어른·장모님</li>
+      <li><span class="k">촌수</span>: 부모-자녀=1촌, 형제자매=2촌, 형제자매의 자녀=3촌, 형제자매의 자녀와 나의 자녀=4촌. 부부는 촌수를 따지지 않음(무촌)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">4</span>한국의 교통과 통신</summary><div class="body">
+    <ul>
+      <li>대중교통: 버스, 지하철, 택시 등. 요금: 현금 / 교통카드</li>
+      <li>멀리 갈 때: 고속버스·시외버스, KTX·SRT, 항공편, 배, 비행기</li>
+      <li>한국의 통신: 우편, 전화, 인터넷</li>
+      <li>우체국: 국내·해외로 편지·물건 보냄 (편의점·택배도 가능)</li>
+      <li>인터넷: 전 세계가 연결. SNS로 정보·검색</li>
+      <li>피싱·보이스피싱(전화로 돈 빼냄), 스미싱(문자로 돈 빼냄)</li>
+      <li>개인정보 유출 의심되면 → <span class="hl">개인정보침해 신고센터(118)</span>에 신고</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">5</span>한국의 주택</summary><div class="body">
+    <ul>
+      <li>주거형태: 단독주택(일반·다가구주택), 공동주택(다세대주택·연립주택·아파트)</li>
+      <li>변화: 과거 단독주택 → 도시 인구 많아짐 → 현재 <span class="hl">공동주택</span>. 아파트=편리, 관리비 비쌈, 층간소음(이웃 갈등)</li>
+      <li><span class="k">거주형태</span>: 자가(내집), <span class="hl">전세</span>(보증금, 2년, 한국에만), <span class="hl">월세</span>(매달 월세), 반전세(보증금+월세)</li>
+      <li>공공임대주택: 나라가 지어 임대 (독거노인, 신혼부부, 사회초년생 — 경제적 어려움)</li>
+      <li>집 구할 때: <span class="hl">부동산중개업소(공인중개사)</span> — 집주인·계약서·안전, 온라인 사이트</li>
+      <li>전입신고: 14일 이내 / 체류지변경신고: 14일 이내 + 확정일자(계약서, 도장 — 행정복지센터)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">6</span>한국의 도시와 농촌</summary><div class="body">
+    <ul>
+      <li>도시화: 1960년부터 농촌→도시(산업화, 공장 많아짐). 이동 이유=교육·취업. 인구 <span class="hl">90%</span>가 도시</li>
+      <li>도시 문제: 교통·주택·환경 문제 → 해결: 대중교통 확충, <span class="hl">위성도시</span>(신도시·공장이전·군사시설), 에너지 절약, 일회용품X</li>
+      <li>농촌: <span class="hl">고령화</span>(노인만 남음) → 일손 부족</li>
+      <li>농촌 활성화: 주말농장, 농촌체험프로그램, 농산물직거래장터</li>
+      <li>해결: 귀농 지원, 품종 개발, 기계화·자동화, 인터넷교육(정보화교육), 편의시설 확충(폐교·마을회관→병원·의원·편의시설)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">7</span>한국의 복지 — 최소한의 인간다운 삶을 위해</summary><div class="body">
+    <ul>
+      <li>복지제도 = <span class="hl">사회보험 / 공공부조 / 긴급복지지원</span></li>
+      <li><span class="k">사회보험</span>(국민 모두): 건강보험, 국민연금, 고용보험, 산업재해보상보험</li>
+      <li><span class="k">공공부조</span>(경제적으로 어려운 국민): 기초생활보장제도(생활비)+의료급여(의료비)+교육비</li>
+      <li><span class="k">긴급복지지원</span>: 갑자기 어려운 일이 생겼을 때 도와줌</li>
+      <li>외국인 복지: 공공부조는 원래 국민만, 단 결혼이민자·한국 국적 부모나 자녀 돌보는 외국인·난민은 혜택</li>
+      <li>외국인 기관: <span class="hl">1345(외국인종합안내센터, 통역)</span>, 다문화가족지원센터(한국어·자녀교육), 외국인근로자지원센터</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">8</span>의료와 안전</summary><div class="body">
+    <ul>
+      <li>의료기관: 동네의원, 보건소, 종합병원</li>
+      <li>동네의원: 병이 심각하지 않을 때(안과·치과·내과·성형외과·피부과·소아과)</li>
+      <li>보건소: 질병 예방 등 국민을 위한 공공 보건 기관</li>
+      <li>종합병원: 큰 병에 걸렸을 때 (진료의뢰서 필요)</li>
+      <li>기타: 한방병원·한의원(침·뜸·한약 = 한국의 전통 의학)</li>
+      <li>건강보험제도: 의료기관 이용 시 적은 비용으로 이용</li>
+      <li>안전: 행정안전부(국가 재난 관리, 1년에 한 번 재난대비훈련). 훈련=지진·화재·비상대피훈련</li>
+      <li>안전 생활: 보호장구 착용, 비상구·구급상자·소화기 확인, 안전·보건 표지판. 비상 시 신고 <span class="hl">119·112·110</span>, 안전신문고 신고</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">9</span>한국의 보육기관</summary><div class="body">
+    <ul>
+      <li>저출산: 임신·출산·영유아 보육·교육을 정부에서 지원</li>
+      <li>임신/출산: 국민행복카드(건강보험·외국인O), 보건소(영양제·무료산전관리·임산부 교육)</li>
+      <li>영아: 만0세~만3세 / 유아: 만3세~만5세(초등학교 취학 전)</li>
+      <li>영유아 보육·교육: <span class="hl">어린이집, 유치원</span></li>
+      <li><span class="k">어린이집</span>(만0~만5세, 보육+교육): 보건복지부 관할. 국공립·사립·직장·가정 어린이집. 9시~2시, 야간보육·24시간 보육</li>
+      <li><span class="k">유치원</span>(만3~만5세, 취학 전, 교육): 교육부 관할. 국공립유치원(저렴, 대기 많음), 사립유치원</li>
+      <li>보육비 지원: 아이행복카드(나이·기관에 따라 금액 다름)</li>
+      <li>태교: 뱃속에서부터 교육(좋은 말·음식·생각). 출산 후 음식: <span class="hl">미역국</span>(생일=미역국, 부모님께 감사)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">10</span>초·중등 교육</summary><div class="body">
+    <ul>
+      <li><span class="k">유아교육</span>: 어린이집·유치원(교육기관)</li>
+      <li><span class="k">초등교육</span> — 초등학교: 의무교육(안내·알림장 보냄). 입학 만6세, 6년. 국립·공립·사립(40분 수업)</li>
+      <li><span class="k">중등교육</span> — 중학교: 의무교육(자유학기제 1년, 시험X). 고등학교: 의무 아님, 자유학기제(시험X), 모든 과목. 45분 수업. 인문계·특수목적고·특성화고·자율형고</li>
+      <li>고등학교: 일반·특성화·특목고(과학·외국어·예술·체육), 자율고. 정시(수능)·수시 모집</li>
+      <li>교과목: 국어·수학·과학 / 창의적 체험활동: 진로 / 현장 체험 학습: 답사·견학</li>
+      <li>온라인 수업: 쌍방향, 콘텐츠, 과제형</li>
+      <li>국립=나라 / 공립=지방자치단체(시·도) / 사립=개인·법인</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">11</span>고등교육과 입시</summary><div class="body">
+    <ul>
+      <li>한국 교육열 아주 높다: 중·고 100%, 대학 70%(OECD 40%). 이유=사회적 지위↑, 취업·결혼에 유리</li>
+      <li>사교육 많음(학원·과외), 입시 스트레스(입시지옥)</li>
+      <li>대학입학: 수시모집 / 정시모집</li>
+      <li>대학수학능력시험(수능시험): <span class="hl">11월</span>. 수능선물=엿, 찹쌀떡, 포크, 휴지</li>
+      <li>대학 종류: 4년제 종합대학교, 교육대학교(초등 선생님), 전문대학교(기술), 방송통신대학교, 사이버대학교(온라인), 기술대학교</li>
+      <li>4년제 종합대학교 = 인문학·사회과학·법학·자연과학·공학·의학 등 연구하는 고등 교육 기관</li>
+      <li>대학원: 석사(2년) → 박사(2년) / 사이버대학원(석사)</li>
+      <li>다문화가정자녀 전형, 재외국민 전형</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">+</span>단체나 조직 활용 — 시민단체 vs 이익집단</summary><div class="body">
+    <table>
+      <tr><th>구분</th><th>시민단체</th><th>이익집단</th></tr>
+      <tr><td>활동 목적</td><td>공익 추구</td><td>자기 집단의 특수한 이익 실현</td></tr>
+      <tr><td>활동 영역</td><td>사회 전반의 다양한 문제</td><td>자기 집단과 관련한 특수한 문제</td></tr>
+      <tr><td>예</td><td>환경단체, 소비자단체 등</td><td>의사협회, 노동조합 등</td></tr>
+      <tr><td>공통점</td><td colspan="2"><span class="hl">정치 과정에서 영향력 행사</span></td></tr>
+    </table>
+  </div></details>
+
+  <details><summary><span class="num">12</span>평생 교육</summary><div class="body">
+    <ul>
+      <li>평생 교육: 나이·상황·관계없이 본인이 관심·필요한 분야를 계속 공부하는 것</li>
+      <li>한국 성인 평생학습 참여율 42.8%(2018)</li>
+      <li>기관: 지역 평생교육 프로그램, 인터넷·미디어 활용. 자격 인정 시 고용 정보 활용</li>
+      <li>이주민: 이민자 조기적응 프로그램(국제결혼·결혼이민자 대상), 사회통합프로그램(한국 이민자 대상)</li>
+      <li>이주민 직업 교육: 고용노동부, 한국산업인력공단 → 직업 훈련 프로그램</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">13</span>한국의 전통가치</summary><div class="body">
+    <ul>
+      <li>전통 가치 = 옛날부터 중요하게 여기는 것</li>
+      <li><span class="k">효</span>(유교 영향): 부모님(명절·생일), 어른(자리양보·무거운 짐), 조상(제사·차례)</li>
+      <li><span class="k">예절</span>: 높임말, 인사법, 식사예절</li>
+      <li>공동체 문화: '우리'를 중요시, 농경사회(벼농사), <span class="hl">상부상조</span>(서로서로 돕는다)
+        <ul>
+          <li>두레: 마을 사람들끼리 힘을 모아 공동으로 농사일 하는 조직</li>
+          <li>품앗이: 일을 서로 거들어 주어 품을 지고 갚는 교환노동</li>
+        </ul>
+      </li>
+      <li><span class="k">연고</span>(나와 공통점으로 맺어진 관계): 혈연(같은 핏줄·성씨), 지연(같은 지역·향우회), 학연(같은 학교·동문회·동창회)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">14</span>한국의 전통 의·식·주</summary><div class="body">
+    <ul>
+      <li><span class="k">한식</span>: 밥(주식)+국·반찬, 젓가락·숟가락. 밥(쌀), 국(찌개·전골·탕), 반찬(김치·나물). <span class="hl">김장</span>=겨울 전에 김치를 많이 담금. 발효음식=김치·젓갈·된장·간장·고추장. K-FOOD</li>
+      <li><span class="k">한복</span>(조선시대): 남자=바지+저고리+버선 / 여자=치마+저고리+버선. 계절에 따라 옷 종류 다름(여름 삼베·모시, 겨울 비단·솜). 평소엔 잘 안 입음, 특별한 날(명절·결혼식·돌·잔치). 생활한복=편리</li>
+      <li><span class="k">한옥</span>: 뒤에는 산, 앞에는 물. 지붕=기와집·초가집. 여름-대청마루, 남쪽으로 문·창문, 겨울-온돌</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">15</span>의례 — 결혼식·돌·성년식·백일·장례식·제사</summary><div class="body">
+    <ul>
+      <li><span class="k">결혼식</span>: 만18세 이하 부모 동의. 정식 부부=혼인신고(시·군·구청). 종류=교회·성당·호텔·결혼식장</li>
+      <li><span class="k">돌</span>: 아이의 첫 번째 생일 (돌잔치=선물·돈·금반지, 돌잡이=아이가 잡은 물건으로 미래 알아봄)</li>
+      <li><span class="k">성년식</span>: 만19세 성인(어른)이 되는 것 축하. 5월 셋째 월요일. 선물=장미·향수</li>
+      <li><span class="k">백일</span>: 아이가 태어난 지 100일이 되는 날 (건강하게 자란 것 축하). 선물=백설기·반지</li>
+      <li><span class="k">장례식</span>: 사람이 죽었을 때, 3일. 검정색·흰색. 부의금(부조금)</li>
+      <li><span class="k">제사</span>: 죽은 사람에게 드리는 의식. 1년·1번. 차례=설날·추석 아침</li>
+      <li>생신 축하: 환갑잔치(61살), 칠순 잔치(고희연 70살)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">16</span>명절</summary><div class="body">
+    <ul>
+      <li><span class="k">설날</span>(새해 시작 명절): 신정(양력 1월 1일, 1일 휴일) / 설날(<span class="hl">음력 1월 1일</span>, 3일 휴일)
+        <ul><li>인사: 새해 복 많이 받으세요(2번) · 풍습: 설빔·차례·세배(세뱃돈·덕담)·성묘(산소) · 전통놀이: 윷놀이·연날리기 · 음식: <span class="hl">떡국</span>(장수·건강), 가래떡</li></ul>
+      </li>
+      <li><span class="k">추석</span>(곡식 수확 감사 명절): <span class="hl">음력 8월 15일</span>, 한가위·가배
+        <ul><li>인사: "더도 말고 덜도 말고 한가위만 같아라"(날씨+먹을 것 풍부) · 풍습: 차례·벌초·성묘 · 음식: <span class="hl">송편</span>(멥쌀가루, 속=깨·콩·녹두·팥, 반달모양), 솔잎(상하지 않도록) · 전통놀이: 씨름·강강술래·달맞이</li></ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">17</span>종교</summary><div class="body">
+    <ul>
+      <li><span class="k">전통종교</span>: 자연을 신성시, 천지신명, 장승(마을 지키는 신), 솟대(기원)</li>
+      <li><span class="k">불교</span>: 중국→삼국시대(4세기). 석가모니 창시, 자비. 문화유산 많음(절·탑·불상)</li>
+      <li><span class="k">유교</span>: 중국→삼국시대. 효(제사) 중시. 향교(유교를 가르치는 교육기관)</li>
+      <li><span class="k">기독교</span>: 사랑의 실천 중시. 천주교(가톨릭)=성당(미사), 17세기 학문으로 들어옴. 개신교=교회(예배), 19세기, 선교사(학교·병원)</li>
+      <li>여러 종교: 이슬람교(모스크), 힌두교 등</li>
+      <li>한국 고유 종교: 천도교(동학, 인내천=사람이 하늘), 대종교(단군 믿음), 원불교(불교와 비슷)</li>
+      <li>한국: 종교의 자유 보장(헌법), 여러 종교+다양성. 타인 배려, 다른 종교 존중</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">18</span>대중문화</summary><div class="body">
+    <ul>
+      <li>대중문화 = 많은 사람들이 즐기는 문화: 영화·드라마·가요·스포츠. 방문화 발달(PC방·노래방·만화방·찜질방)</li>
+      <li><span class="k">한류</span> = 한국의 대중문화가 외국으로 수출. 종류=영화·드라마·가요(K-POP)·음식·K-뷰티(화장품)·옷</li>
+      <li>영화(아카데미상), K-POP(빌보드 1위), 스포츠, 드라마 수출</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">19</span>여가문화</summary><div class="body">
+    <ul>
+      <li>여가문화 = 일을 하고 남는 시간에 즐기는 문화: 낮잠·인터넷·쇼핑·SMS·운동·여행·관람·친구 만나기·동호회</li>
+      <li>중요성↑ 이유: 소득↑(3만 달러), 주52시간/주5일제, 일+삶(워라밸), 평균 수명↑</li>
+      <li>문화가 있는 날: 매달 마지막 수요일(여러 혜택)</li>
+      <li>외국인도 가능: 행정복지센터·평생교육관·공연 관람·동호회·인터넷</li>
+      <li>동호회 = 좋아하는 분야 여럿이 같이(독서·축구·수영 동호회). 공연 입장권=앱·인터넷·직접 방문</li>
+    </ul>
+  </div></details>
+
+  <div class="cat">PART 2 · 정치 (Siyosat)</div>
+
+  <details><summary><span class="num">▲</span>큰 흐름: 왕 → 민주주의 → 국민의 대표(대통령) → 권력 분립(3권 분립)</summary><div class="body">
+    <ul>
+      <li>대한민국 = 민주주의 체택, 국민이 주권 가짐(민주공화국, 주권→국민: 헌법)</li>
+      <li>4.19혁명(이승만, 부정선거), 5.18민주화운동(전두환·군부), 6월항쟁(대통령 직선제, 5년·1번 단임제)</li>
+      <li>정치: 직접민주정치, 간접민주정치(선거·투표: 대통령제, 1~19대)</li>
+      <li><span class="k">삼권분립</span>: 입법부(국회) · 행정부(정부) · 사법부(법원). 서로 <span class="hl">견제</span>, 가운데 <span class="hl">국민</span>
+        <ul>
+          <li>입법부(국회): 법 제정 — 법과 예산, 견제, 국회의원(4년, 지방국회+비례대표=300명), 국회의사당, 국회의 회의(회의)</li>
+          <li>행정부(정부): 법률 집행(나라 살림) — 대통령(5년·1번), 청와대, 국무총리·장관(청사), 국무회의</li>
+          <li>사법부(법원): 법률 적용(재판) — 지방법원→고등법원→대법원(3번, 삼심제도)</li>
+        </ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">20</span>한국의 민주 정치</summary><div class="body">
+    <ul>
+      <li>정치 — 넓은 뜻: 사람들의 이해관계를 조정하는 일 / 좁은 뜻: 국가의 통치하는 일(나라를 다스리는 일)</li>
+      <li>민주주의: 국민이 주권(대통령·국회의원 등 정치인X)</li>
+      <li>민주정치: 국민을 위해서, 국민의 뜻대로 정치 ↔ <span class="hl">독재정치</span>(한 사람이 마음대로)</li>
+      <li>권력분립: 국민 주권 보호 위해 권력을 여러 기관으로 나누는 것 = 3권분립(입법·행정·사법)</li>
+      <li>발전: 4.19혁명(이승만 부정선거), 5.18민주화운동(전두환 군인, 투표X), 6월항쟁(1987, 대통령 직선제 주장→실시)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">21</span>입법부 (=국회)</summary><div class="body">
+    <ul>
+      <li>하는 일: 법을 만듦·고침, 예산 확정, 행정부와 사법부 견제, 국정감사(행정부 감사), 인사청문회</li>
+      <li>국회의원: 국민 선출, <span class="hl">4년</span>마다, 연임 가능, <span class="hl">300명</span>(지역구+비례대표: 정당의 투표수), 불체포특권</li>
+      <li>총선: 국회의원을 선출하는 선거, 4년마다, 4월에 실시</li>
+      <li>국회의사당: 서울 여의도. 국회의원이 일하는 곳</li>
+      <li>국회: 국회의원들이 하는 회의</li>
+      <li>국정감사: 국회가 행정부(정부)가 일을 잘하는지 감사, 매년 <span class="hl">9~11월</span></li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">22</span>행정부 (=정부)</summary><div class="body">
+    <ul>
+      <li>하는 일: 입법부에서 만든 법률 집행, 나라의 살림</li>
+      <li>최고 책임자: <span class="hl">대통령</span> — 국민이 선출, 5년마다, <span class="hl">단임제(1번만)</span>, 청와대</li>
+      <li>국무총리: 대통령이 임명, 대통령을 도와서 각 부 장관과 정책을 만듦. 청사에서 일함</li>
+      <li>장관: 각 부처(18개)의 최고 책임자 (노동부·교육부·법무부 장관 등)</li>
+      <li>국무회의: 대통령+국무총리+장관들이 모여 회의 → 정책 결정(노인·교육·통일정책 등)</li>
+      <li>대통령의 권한: 국군 지휘, 국무총리·장관 임명, 국가 대표, 범죄 면제, 국회가 만든 법 거부</li>
+      <li>1대~19대 대통령: 문재인(19대), 초대 대통령=이승만, 김대중(노벨평화상)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">23</span>사법부 (=법원)</summary><div class="body">
+    <ul>
+      <li>하는 일: 재판(사법)</li>
+      <li>재판: 법과 양심에 따라서 재판</li>
+      <li><span class="k">삼심제도</span>: 3번 재판. 지방법원→고등법원→대법원(최종 재판)</li>
+      <li>가정법원: 가사재판(가정·친척·상속·자녀양육·청소년 범죄)</li>
+      <li>재판 이유: 분쟁(다툼) 해결, 범죄→형벌, 사회질서 유지</li>
+      <li>판사: 공무원, 사법시험. 사법부=독립</li>
+      <li>피의자 인권: 영장(서류), 미란다원칙(피의자 권리), <span class="hl">무죄추정원칙</span>(죄가 없다고 생각)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">24</span>선거와 지방자치</summary><div class="body">
+    <ul>
+      <li><span class="k">선거 종류</span>: 대통령선거(대선, 5년, 1번, 외국인X) / 국회의원선거(총선, 4년, 4월, 외국인X) / 지방선거(4년, 6월, 외국인 영주권 3년 이상·만18세 이상 O)</li>
+      <li><span class="k">선거 원칙(4원칙)</span>: 보통선거(만18세 이상, 누구나), 평등선거(1인 1표), 직접선거(국민이 직접), 비밀선거</li>
+      <li>사전투표: 투표일 전에 금요일·토요일(6시~6시)</li>
+      <li><span class="k">지방자치</span>: 주민들이 지방의 대표(도지사·시장)를 뽑고 정치 = 풀뿌리 민주주의</li>
+      <li>지방 대표(외국인O): 광역자치단체장·지방자치단체장·지방의회의원</li>
+      <li>외국인주민회의, 외국인자율방범대, 지방선거 참여</li>
+    </ul>
+  </div></details>
+
+  <div class="cat">PART 3 · 경제 (Iqtisod)</div>
+
+  <details><summary><span class="num">25</span>경제 성장 — 한강의 기적</summary><div class="body">
+    <ul>
+      <li>한국전쟁 후 세계에서 가장 못사는 나라 → <span class="hl">12위의 경제대국</span>: 한강의 기적. 기적의 비결=수출</li>
+      <li>1950–60대: 옷·가방·신발·가발</li>
+      <li>1970년대: 기계·철강</li>
+      <li>1980년대: 자동차·화학</li>
+      <li>1990년대: 전기·전자제품·조선</li>
+      <li>2000년대: 첨단기술제품(반도체·휴대폰·신소재), 드라마·영화·노래·의료서비스</li>
+      <li>기적의 요인: 1. 풍부한 노동력 2. 뜨거운 교육열 3. 경제 위기를 극복하겠다는 의지</li>
+      <li>다른 나라와 교류: 수출-자유무역협정(FTA), 칠레·중국·베트남·미국·EU</li>
+      <li>원조받던 나라 → 원조를 하는 나라로 바뀐 <span class="hl">최초의 나라</span>(저개발국 원조·교통·교육·환경 원조)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">26</span>일상생활과 경제 활동</summary><div class="body">
+    <ul>
+      <li>경제 활동 = 일상생활에서 재화·서비스를 사거나 파는 것. 재화=물건(휴대폰·신발·컴퓨터·책), 서비스=배달·한국어 수업·의사 진찰</li>
+      <li>물가: 재화·서비스의 평균 가격 → 오르고 있음. 공공요금(버스·전기요금)=싼 편(나라에서 관리), 식재료=비싼 편(농지·목장 부족, 날씨), 부동산=수도권·지방 대도시는 비쌈</li>
+      <li>공유경제: 집·사무실·자전거·자동차를 나누어 씀</li>
+      <li>화폐: 동전·지폐(5만 원), 수표(10만 원/이름·사인·연락처·신분증)</li>
+      <li>결제: 현금·카드·OO페이(모바일 결제 — 증가)</li>
+      <li>합리적인 선택: 소비·저축 → 나에게 이익</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">27</span>장보기와 소비자 보호</summary><div class="body">
+    <ul>
+      <li>장보기: 시장. 시장=상설시장·정기시장</li>
+      <li>상설시장: 전통시장(가격흥정·직접판매·관광객), 대형마트·백화점(다양·주차 편리), 편의점(24시간·젊은 사람), 슈퍼마켓</li>
+      <li>정기시장: 3일장·5일장</li>
+      <li>홈쇼핑·온라인쇼핑: 물건 직접 못 봄 → 산 사람들의 평가 보고 사야 함</li>
+      <li>불만 시: 상점·회사에 수리·반품·교환·환불 요구</li>
+      <li>소비자 기본법: 소비자의 권리와 책임 보호, 리콜제도, 제조물 책임법, 의무표시제</li>
+      <li>전문가 도움: <span class="hl">한국소비자원(1372)</span>, 소비자 단체</li>
+      <li>책임감 있는 소비자: 가격·품질·영수증·유통기한 확인, 사용설명서·주의사항, 환경보호·자원절약 소비</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">28</span>금융기관 이용하기</summary><div class="body">
+    <ul>
+      <li>금융기관 = 돈을 거래하는 기관: 은행·저축은행·우체국·새마을금고·인터넷뱅킹은행</li>
+      <li>은행: 한국은행(화폐 만드는 곳), 시중은행(국민·우리은행), 지방은행(부산·광주은행)</li>
+      <li>은행업무: 예금·대출·송금·환전. 시간 오전 9시~오후 4시</li>
+      <li>농협은행·우체국·새마을금고: 안전, 지점도 많음 / 저축은행: 개인·위험·금리가 높음</li>
+      <li>계좌 만들기: 1. 직접 방문 2. 신분증(여권·외국인등록증·재직증명서)</li>
+      <li>금융실명제: 금융거래는 실명(자기이름)으로</li>
+      <li>비밀번호(OTP), 문자메시지 등록 / 메신저피싱: 은행·경찰서에 신고</li>
+      <li>이용: ATM, 스마트폰뱅킹, 인터넷뱅킹(증가, 편리, 수수료 낮음, 24시간 거래 가능)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">29</span>취업하기</summary><div class="body">
+    <ul>
+      <li>일자리 상황: 일자리 구하기 어렵다. 실업률 미국·유럽보다 낮음(자영업자 많음·일하는 여성 낮음). 비정규직 늘어남(불안)</li>
+      <li>취업 순서: 1. 직업 찾기(공부·자격증) → 능력 기르기 → 구인광고(워크넷·누리집) → 이력서(경험·자격증) → 면접 → 근로계약서(임금·근로조건·휴일)</li>
+      <li>주의사항: 업체 확인(무슨 일?), 정식허가업체?</li>
+      <li>외국인도 취업 가능: 1. 능력(한국어·한국사회이해) → 2. 구인광고·취업박람회 → 취업</li>
+      <li>외국인 취업교육: 취업박람회(정보), 평생학습기관, 한국산업인력공단</li>
+      <li>부당한 대우: 고용노동부·외국인근로자지원센터에 신고</li>
+    </ul>
+  </div></details>
+
+  <div class="cat">PART 4 · 법 (Qonun)</div>
+
+  <details><summary><span class="num">30</span>한국 체류와 법</summary><div class="body">
+    <ul>
+      <li>외국인 입국: <span class="hl">여권+비자(=사증)</span> 필요 (여권·비자는 유효기간 남아 있어야)</li>
+      <li>여권: 국적·이름 등 신분증명서 / 비자: 입국 허가서</li>
+      <li>외국인 체류: 단기체류(90일 이내) / 장기체류(90일 초과)</li>
+      <li>장기체류: 출입국·외국인청에 가서 <span class="hl">외국인등록(90일 이내)</span></li>
+      <li><span class="k">재한외국인처우기본법(2007년)</span>: 한국에 사는 외국인의 지위와 다문화 이해 증진 위한 법. 다국어전화상담, 인권 침해 시 신고, 법률상담, 한국어 교육, 긴급의료지원서비스(1회 500만원)</li>
+      <li>세계인의 날: 매년 <span class="hl">5월 20일</span></li>
+      <li>외국인 인권 침해 시: <span class="hl">국가인권위원회</span>에 신고</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">31</span>외국인과 법</summary><div class="body">
+    <ul>
+      <li>법 = 사회 구성원이 지혜와 협의로 만들어진 규범. 목적=정의 실현. 정의=옳고 그름을 판단해서 합당한 몫을 주는 것</li>
+      <li>입법: 입법부(국회), 국회의원(4년, 국회의원선거=총선거), 국회의사당(서울 여의도) 300명</li>
+      <li>준법: 법을 지키려는 노력 (중요)</li>
+      <li>외국인의 권리: 국제법에 따라 인권 보장(근로기준법·119·112·건강보험·전염병예방·외국인 자녀 교육·사회보험·지방선거 참여=영주권 3년 만18세 이상 외국인등록)</li>
+      <li>외국인의 의무: 공공질서 지키기, 준법, 세금납부</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">+</span>법률혼 vs 사실혼</summary><div class="body">
+    <table>
+      <tr><th>구분 기준</th><th>법률혼 배우자</th><th>사실혼 배우자</th></tr>
+      <tr><td>혼인신고</td><td>혼인신고를 함</td><td>혼인신고를 하지 않음</td></tr>
+      <tr><td>이혼 시 재산 나누는 것 신청</td><td>가능</td><td>가능</td></tr>
+      <tr><td>이혼 시 위자료 청구</td><td>가능</td><td>가능</td></tr>
+      <tr><td>배우자 사망 시 상속</td><td>가능</td><td>불가능(예외 있음)</td></tr>
+      <tr><td>다른 배우자와 결혼</td><td>중혼에 해당 → 금지</td><td>중혼에 해당하지 않음</td></tr>
+      <tr><td>자녀 출생 시</td><td>혼인 중 출생자</td><td>혼인 외 출생자</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary><span class="num">33</span>가족과 법</summary><div class="body">
+    <ul>
+      <li>가족 = 혈연과 혼인으로 인한 관계. 혼인=부부. 법적인 부부=혼인신고(시·군·구청)</li>
+      <li>재산: 1. 부부 별산제, 2. 혼인 후 같이 번 재산=공동재산(가사노동도 인정)</li>
+      <li>부부의 권리: 같이 살아야 함, 생활비용 공동 부담</li>
+      <li>부부의 의무: 부양(번 돈으로 같이 생활), 양육, 동거(같이 살아야 함)</li>
+      <li>자녀 출생신고: 1개월 이내에 행정복지센터에 신고</li>
+      <li>이혼: 혼인 관계를 끊는 것. 종류=협의이혼·재판상 이혼</li>
+      <li>위자료: 이혼 책임이 있는 사람이 상대방에게 지불. 양육: 양육하는 사람에게 양육비 지급(정해진 날짜에 만날 수 있음)</li>
+      <li>양육비·위자료 안 주면 → 가정법원에 이행명령(3회 이상 안 이행→과태료·감옥·강제 이행)</li>
+      <li>결혼이민자: 이혼 책임이 상대방에게 있을 경우 비자 변경·귀화 허가</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">34</span>생활 법률</summary><div class="body">
+    <ul>
+      <li><span class="k">경범죄</span> = 일상 속 가벼운 위법 행위 → 과태료
+        <ul>
+          <li>쓰레기 무단 투기: 종량제봉투 안 쓰고 버림 → 신고하면 포상금</li>
+          <li>무단횡단: 신호 안 지키거나 횡단보도가 아닌 곳을 지나는 것</li>
+          <li>침 뱉기, 새치기 등</li>
+        </ul>
+      </li>
+      <li><span class="k">음주운전</span>: 술 먹고 회복 전에 운전 → 나와 타인을 위험하게 함, 강력한 처벌. 사고 안 내도 도로교통법 위반. 경찰 음주측정에는 반드시 응해야 함</li>
+      <li><span class="k">학교폭력</span>: 학생을 신체적·정신적·재산적으로 피해 주는 것 → <span class="hl">117</span>·경찰청(사이버 안전국)에 신고</li>
+      <li>안전띠 안 매면 과태료. 6세 미만 아이 → 카시트 사용. 몰래카메라=범죄</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">35</span>재산과 법</summary><div class="body">
+    <ul>
+      <li>재산: 동산(현금·예금·금) + 부동산(집·땅·건물)</li>
+      <li>금전거래: 돈을 빌려주거나 빌려 받는 거래</li>
+      <li>계약: 자유로운 의사에 의해 계약. 법을 위반한 계약은 무효. 계약 사항=문서로 작성</li>
+      <li>차용증(돈 빌릴 때 받는 문서) / 영수증(돈 갚을 때 받는 문서). 이자: 연 24% 넘으면 안 됨</li>
+      <li>부동산 거래: 계약서, 계약금 10% → 중도금 → 잔금 → 소유권 이전등기(등기소). 계약 전 등기부등본 확인</li>
+      <li>임대(빌려 주는 것)=임대인 / 임차(빌려 쓰는 것)=임차인. 예: 전세·월세·반전세</li>
+      <li>임차인 보호: 임대차보호법(2년~4년 임대기간 보장, 보증금 먼저 반환=전입신고·확정일자)</li>
+      <li>안전한 부동산 거래: <span class="hl">공인중개사</span>(중개수수료 지불) 통해 거래, 등기부등본 반드시 확인</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">+</span>한 눈에 살펴보는 법질서</summary><div class="body">
+    <table>
+      <tr><th>가족 문제와 법</th><th>재산 문제와 법</th></tr>
+      <tr><td>가족과 친족의 범위 / 법률혼·사실혼·동거 / 협의 이혼·재판상 이혼 / 이혼 시 양육·재산 문제</td>
+          <td>사망신고·유언 방법 / 상속 순위·법정 상속 비율 / 금전분쟁·가처분·가압류 / 내용증명 활용 방법</td></tr>
+      <tr><th>직장생활과 법</th><th>범죄와 법</th></tr>
+      <tr><td>단시간 근로자의 권리 / 단시간 근로자 차별 금지 / 성희롱 보호·대처 / 모성 보호를 위한 법</td>
+          <td>범죄와 성범죄 / 생명형·자유형·재산형·자격형 / 형사 재판 과정 / 피의자와 피고인의 권리</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary><span class="num">36</span>범죄와 법</summary><div class="body">
+    <ul>
+      <li>범죄: 일상생활에서 타인에게 재산·신체·정신적 피해를 주는 일</li>
+      <li>형벌: 살인→사형, 도둑질→감옥, 폭행·벌금 등</li>
+      <li>형법: 범죄와 형벌을 정해 놓은 법 → 형사재판(범죄자를 재판, 형법을 어김)</li>
+      <li><span class="k">죄형법정주의</span>: 범죄와 형벌을 법으로 정하지 않으면 처벌할 수 없음</li>
+      <li>법 집행 기관: <span class="hl">경찰과 검찰</span>
+        <ul>
+          <li>경찰: 1차 수사, 범죄 예방·수사·음주단속·교통단속, 112 신고 (경찰서·파출소·지구대)</li>
+          <li>검찰(검사): 2차 수사, 재판을 신청(기소), 형사 재판 참여 (검찰청)</li>
+        </ul>
+      </li>
+      <li>고위공직자 수사처(공수처): 지위 높은 공무원 수사·재판 신청</li>
+      <li>대한법률구조공단: 법을 모를 때 도움 신청 / 외국인 법률 교육: 범죄예방교육</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">+</span>형벌의 종류</summary><div class="body">
+    <p>형벌 = 범죄를 저지른 사람에 대해 부과하는 처벌</p>
+    <table>
+      <tr><th>형벌</th><th>내용</th></tr>
+      <tr><td>생명형</td><td>생명을 박탈하는 형벌. 흔히 <b>사형</b>이라 함</td></tr>
+      <tr><td>자유형</td><td>일정 기간 교도소에 가둠. 징역의 경우 교도소 안에서 노역</td></tr>
+      <tr><td>재산형</td><td>재산의 일부를 빼앗는 형벌(벌금형 등), 범죄 관련 물건 몰수</td></tr>
+      <tr><td>자격형(명예형)</td><td>명예·자격을 박탈. 공무원이 될 자격 정지·상실</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary><span class="num">+</span>형사 절차 (범죄 발생 → 형 집행)</summary><div class="body">
+    <ul>
+      <li>① 범죄 발생</li>
+      <li>② <span class="hl">경찰 수사</span>(신고·고소→수사→사건 검찰 송치) — 경찰수사 단계</li>
+      <li>③ <span class="hl">검찰 수사</span>(수사·수사지휘, 기소 여부 결정) — 검찰수사 단계</li>
+      <li>④ <span class="hl">기소</span>(공소제기) / 불기소(10일 이내, 항고·재항고→재정신청·헌법소원)</li>
+      <li>⑤ 1심 재판 → (항소 7일 이내) → 2심 재판 → (상고 7일 이내) → 3심 재판 — 재판 진행 과정</li>
+      <li>⑥ 형 집행</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">37</span>권리 보호와 법</summary><div class="body">
+    <ul>
+      <li>권리 → 권리침해 → 분쟁</li>
+      <li>분쟁 해결: <span class="hl">소송(재판)</span> = 법원에 판결을 요구(민사재판·가사재판)</li>
+      <li>대안적 분쟁 해결: 1. 협상(당사자끼리 대화·협의) 2. 조정 3. 중재(강제로 해결)</li>
+      <li>법률 전문가: 소송할 때 변호사의 도움</li>
+      <li>법률행정처: 통·번역 서비스</li>
+      <li>약자(외국인 등) 구제 기관: 국가인권위원회, 국민권익위원회, 외국인지원센터, 행정복지센터, 시민단체(YWCA), 1345, 마을변호사, 한국소비자원, 금융감독원</li>
+      <li>긴급전화: <span class="hl">112(경찰)</span>, <span class="hl">119(응급상황)</span>, <span class="hl">110(모르는 것 물어볼 때)</span></li>
+    </ul>
+  </div></details>
+
+  <div class="cat">PART 5 · 역사 (Tarix)</div>
+
+  <details><summary><span class="num">★</span>한국의 역사 흐름 (전체 timeline)</summary><div class="body">
+    <ul>
+      <li>고조선 → 삼국시대(고구려·백제·신라) → 남북국시대(남: 통일신라 / 북: 발해) → 고려(918년) → 후삼국시대(후고구려·후백제·신라) → 조선(1392년: 조선전기-임진왜란-조선후기) → 대한제국 → 일제강점기(1910–1945)</li>
+      <li>미·소 군정기(1945–1948) → 남북 분단 → 6.25전쟁(한국전쟁 1950–1953) → 남북한 냉전과 교류</li>
+      <li><span class="k">민주주의 발전</span>: 4.19혁명, 유신헌법반대, 5.18광주민주화운동, 6월항쟁</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">38</span>고조선의 건국</summary><div class="body">
+    <ul>
+      <li>박은식: 역사학자·독립운동가, 역사의 중요성 강조. "한국 역사를 왜 배우는가?" = 어제와 오늘을 이해, 과거를 올바르게 바로잡기 위해서</li>
+      <li>고조선: 기원전 2333년 10월 3일 (2021년 = 4354년)</li>
+      <li>건국: 환웅부족(한반도+곰 부족+호랑이 부족) → 환웅부족+곰 부족 결혼 → <span class="hl">단군왕검</span>(호랑이부족X)</li>
+      <li>단군왕검: 고조선 건국(청동기 시대), 시조(처음 조상)</li>
+      <li>유물: 고인돌(중국과 한국에서 볼 수 있음), 비파형동검, 미송리식 토기</li>
+      <li>제사: 강화도 참성단(마니산) / 제사 10월 3일=개천절</li>
+      <li>생활: <span class="hl">8조법</span>(3개만 전해짐): 1. 죽이면→사형(법이 엄격), 2. 남을 때리면→곡식(농사), 3. 도둑질→노비, 50만 전을 갚아야 함 (신분·계급사회·사유재산)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">39</span>삼국시대와 남북국 시대</summary><div class="body">
+    <ul>
+      <li>고조선 → 삼국시대(고구려·백제·신라, 불교)</li>
+      <li><span class="k">고구려</span>: 주몽(졸본지역), 5세기 전성기, 땅이 가장 넓음. 신라를 도와줌</li>
+      <li><span class="k">백제</span>: 온조(주몽의 아들), 4세기 전성기, 화려하고 섬세한 문화, 왜(일본)을 도와줌</li>
+      <li><span class="k">신라</span>: 박혁거세, 6세기 전성기, 화랑도(군사조직). 신라+당나라 → <span class="hl">삼국통일</span></li>
+      <li><span class="k">통일신라</span>: 불교문화 발전(불국사·석굴암·다보탑 등), 첨성대(동양에서 가장 오래된 천문대). 땅이 작아짐. 한마음정책(백제·고구려 사람 포용)</li>
+      <li><span class="k">발해</span>: 대조영(고구려+고구려 유민), 220년 역사, 신라와 교류·경쟁. 멸망 후 고려로 옴. 발해 문화=고구려+주변+불교 문화</li>
+      <li>남북국 시대(유득공 발해고): 남쪽=통일신라 / 북쪽=발해</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">40</span>고려시대</summary><div class="body">
+    <ul>
+      <li>고려: 왕건(918년), 10%(백성들의 생활 안정), 불교 권장(백성들의 마음 하나로 모으려고)</li>
+      <li>귀족사회: 지배층·문신 → 무신으로 바뀜(무신의 반란)</li>
+      <li>무신 횡포: 불법·땅·노비 차지, 많은 세금 → 농민들이 반란</li>
+      <li>몽골 침략: 13세기. 몽골 문화·몽골 간섭</li>
+      <li>고려 말: 왜구·홍건적의 침략 → 무신들의 힘이 강해짐. <span class="hl">이성계</span>: 고려 멸망 → 조선 건국(1392년)</li>
+      <li>고려 문화: 고구려+백제+신라+주변 문화, 귀족 중심(화려·섬세, <span class="hl">고려청자</span>·도자기), 불교 문화(절·탑·건축·팔관회·연등회), 몽골문화 유행</li>
+      <li>고려 사회: 귀족 중심, 일부일처제(한 명의 남편·한 명의 아내), 남녀평등 사회</li>
+      <li>고려 무역: 벽란도(국제 무역항·개경 근처), 아라비아상인 → KOREA, 수출(금·은·종이·인삼)</li>
+      <li>직지심체요절: 박병선·프랑스에서 발견, <span class="hl">세계 최초의 금속활자 책</span></li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">41</span>조선시대</summary><div class="body">
+    <ul>
+      <li>건국(1392년): 태조 이성계, 유교 이념으로 정치. 신분제 사회(양반-중인-상민-천민, 양반중심사회)</li>
+      <li>태조 이성계: 조선 건국, 개경→한양으로 수도 옮김. 경복궁·종묘(제사)·사대문</li>
+      <li>태종 이방원: 왕의 권력 강하게. 호패(신분증, 16세 이상 남자)</li>
+      <li><span class="k">세종대왕</span>: 농업을 위해 측우기·해시계·물시계 만듦, 역사·지리·예절에 관한 책, <span class="hl">훈민정음(한글)</span></li>
+      <li>성종: 법전 [경국대전] 만듦 (생활에 대한 모든 것이 담겨 있음)</li>
+      <li><span class="k">조선 전기</span> — 전쟁: 임진왜란(일본·이순신 장군·의병), 병자호란(청나라, 남한산성에서 조선이 항복)</li>
+      <li><span class="k">조선 후기</span> — 영조·정조: 세금을 줄여 줌(백성 생활 안정), 상업·농업·공업 발전, 학문 발전. 정조: 수원 화성(유네스코 세계문화유산, 거중기 이용)</li>
+      <li>조선 후기: 양반 수↑, 상민·천민 수↓ → 평등사회로 나아감. 서민 문화(한글 소설·판소리·탈춤·민화) 유행</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">42</span>일제 강점과 독립운동</summary><div class="body">
+    <ul>
+      <li>조선 → 대한제국 → 일제강점기(1910–1945년 8월 15일, 36년)</li>
+      <li>흥선대원군: 고종(12세)의 아버지, 경복궁 다시 지음, 척화비. 통상수교거부정책. 일본은 서양과 교류하며 발전</li>
+      <li>일본 침략 → 강화도 조약(1896년) → 토지조사(땅 빼앗음)</li>
+      <li>독립운동: 3.1운동(1919년 3월 1일, 대한독립만세, 유관순), 대한민국 임시정부(중국 상하이), 의병·독립군</li>
+      <li>안중근: 만주에서 일본군과 싸움. 윤봉길·이봉창: 일본 왕에 폭탄 던짐</li>
+      <li><span class="hl">1945년 8월 15일: 광복절</span></li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">＄</span>지폐의 위인</summary><div class="body">
+    <ul>
+      <li><span class="k">천 원</span>: 이황 — 유교 학자, 교육자</li>
+      <li><span class="k">오천 원</span>: 이이 — 유교 학자, 정치가</li>
+      <li><span class="k">만 원</span>: 세종대왕 — 한글(훈민정음), 물시계·해시계·측우기, 학자들과 많은 책</li>
+      <li><span class="k">오만 원</span>: 신사임당 — 이이의 엄마, 훌륭한 엄마·아내·자식·시인·화가</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">43</span>한국의 역사 인물</summary><div class="body">
+    <ul>
+      <li><span class="k">나라를 위기에서 구한 인물</span>:
+        <ul>
+          <li>을지문덕: 고구려 때 중국 수나라와 전쟁, 살수(청천강)에서 크게 이김 = <span class="hl">살수대첩</span></li>
+          <li>서희: 고려 때 거란과 외교로 강동6주 땅 얻음</li>
+          <li>이순신: 조선 때 일본의 침략 → 거북선 만들어 일본 수군 물리침</li>
+        </ul>
+      </li>
+      <li><span class="k">조선의 훌륭한 여성</span>:
+        <ul>
+          <li>허난설헌: 허균의 누나, 글재주, 결혼해서 두 자녀·친정아버지 잃고 일찍 죽음</li>
+          <li>김만덕: 제주도 거상, 흉년 때 자기 재산으로 쌀 사서 백성 도와줌. 정조 임금이 칭찬</li>
+          <li>유관순: 일제강점기 이화학당, 1919년 3월 1일 3.1만세운동 참여, 19세 나이로 감옥(서대문 형무소)에서 죽음</li>
+        </ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">⚔</span>6·25 전쟁(한국전쟁)과 남북 관계 ①</summary><div class="body">
+    <ul>
+      <li>01. 어떻게 시작·전개? — 북한군의 남침(남쪽을 침략)</li>
+      <li>1950년 6월 25일 새벽, 북한군 남침(소련이 도와줌) → 북한 3일 만에 서울 점령, 낙동강까지 후퇴 → 부산으로 내려감 → UN(유엔군) 참전 → <span class="hl">인천상륙작전</span>(서울 되찾음, 압록강까지 진격) → 중공군(중국군) 개입 → 서울 다시 빼앗김(1.4후퇴) → 38도선 부근에서 치열한 전쟁 → 3차 세계대전으로 확대 걱정 → 2년 동안 휴전협정 → <span class="hl">1953년 정전협정</span>(북한·UN·중국) → 휴전선을 경계로 남북 분단</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">⚔</span>6·25 전쟁과 남북 관계 ② — 남북 대화</summary><div class="body">
+    <ul>
+      <li>02. 정전 협정 이후 남북 관계 변화 — 남북 대화를 위한 노력</li>
+      <li>1972년 7.4남북공동성명(자주적 통일·평화적·민족대단결) → 1991년 UN동시 가입 / 핵무기X(북한 핵개발 의혹) → 1998년 금강산 관광(김대중) → 2000년 1차 남북정상회담(김대중) → 6.15남북공동성명(경제 교류·이산가족 상봉) → 2007년 2차 남북정상회담(노무현) → 10.4남북공동성명(서로 체제 인정·경제협력) → 2018년 판문점선언 → 2018년 평창동계올림픽 공동선수단 → 2019년 미국 트럼프와 김정은 판문점 만남</li>
+      <li>판문점: 남북분단의 상징, 남북한정상회담·판문점 선언</li>
+    </ul>
+  </div></details>
+
+  <div class="cat">PART 6 · 문화유산 & 지리 (Meros & Geografiya)</div>
+
+  <details><summary><span class="num">44</span>한국의 문화유산</summary><div class="body">
+    <ul>
+      <li><span class="k">종교 관련</span>:
+        <ul>
+          <li>불교(삼국시대~통일신라·발해): 절·탑·불상·석굴암·석가탑·고구려 금동미륵상</li>
+          <li>유교(조선): 예의·질서·서열·삼강행실(성인 충성·부모 효도·어른 공경). <span class="hl">서원</span>=유학을 공부하는 학교, <span class="hl">성균관</span>=유학을 공부하는 대학교</li>
+        </ul>
+      </li>
+      <li><span class="k">과학기술 관련</span>:
+        <ul>
+          <li>삼국시대: 첨성대(태양·하늘·별 등 관측), 농업·날씨에 영향</li>
+          <li>인쇄술(삼국·고려): 무구정광대다라니경(목판인쇄 중 세계 가장 오래됨), 고려대장경(팔만대장경)</li>
+          <li>직지심체요절: 금속활자본(프랑스), 세계에서 가장 오래</li>
+          <li>고려시대 무기: 화약(최무선) / 조선시대 세종대왕: 물시계(자격루)·해시계(앙부일구)·측우기·훈민정음(천문연구)</li>
+          <li>서원: 유네스코 세계문화유산(병산서원·필암서원)</li>
+        </ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">45</span>한국의 기후와 지형</summary><div class="body">
+    <ul>
+      <li>기후: 지구의 북반구에 위치. <span class="hl">온대기후</span>, 사계절(봄·여름·가을·겨울)
+        <ul>
+          <li>봄: 꽃샘추위, 황사·미세먼지·마스크, 꽃구경</li>
+          <li>여름: 무덥고 비 많이 옴, 열대야, 홍수, 여름휴가(피서)</li>
+          <li>가을: 시원하고 건조, 단풍 구경</li>
+          <li>겨울: 춥고 눈이 옴, 폭설·스키·눈썰매·스케이트</li>
+        </ul>
+      </li>
+      <li>지형: 산지 국토의 <span class="hl">65%</span>, 동쪽에 산 많음(동고서저). 동쪽=태백산맥(등줄기)·태백산·오대산</li>
+      <li>하천: 서해나 남해로 흐름(한강·금강·낙동강·영산강)</li>
+      <li>평야: 하천 주변에 발달, 서쪽에 발달(김포평야·호남평야·나주평야)</li>
+      <li>해안선: 동해-단조롭고 섬 많지 않음 / 서해·남해-복잡, 섬 많음(갯벌 발달). 서해=세계 5대 갯벌 중 하나</li>
+      <li>반도국가: 삼면(동해·서해·남해)이 바다, '한반도'</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">46</span>수도권 (서울·경기도·인천)</summary><div class="body">
+    <ul>
+      <li>수도권: 서울, 경기도, 인천광역시. 인구 1/5(1,000만)</li>
+      <li>서울: 정치·경제·문화·역사의 중심지. 정치=청와대·국회의사당 / 경제=대기업·금융(은행·증권회사) / 문화·역사=경복궁·청계천 / 상업=백화점·동대문/남대문 시장·명동</li>
+      <li>경기도: 9개 도 중 인구 가장 많음(1,300만). 농업·공업·상업·축산업. 신도시 건설(서울 인구 분산)</li>
+      <li>인천광역시: 제2의 항구도시, 인천국제공항</li>
+      <li>수도권 문제점: 인구 많음(주택 부족·교통 혼잡·공기 오염·소음·물가 비쌈·스트레스)</li>
+      <li>관광: 서울(청계천·남대문·동대문·청와대), 경기도(이천도자기축제·고양꽃박람회·안산 국경 없는 마을), 인천(강화도 갯벌·차이나타운)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">47</span>충청지역</summary><div class="body">
+    <ul>
+      <li>충청도 = 충주+청주. 교통의 중심지, 백제 문화의 중심지. 세종특별자치시, 대전광역시</li>
+      <li>충청도: 수도권·경상도·전라도를 이어주는 교통의 중심지</li>
+      <li>세종특별자치시: 행정업무 도시(국토균형발전·수도권 인구 집중 해결)</li>
+      <li>대전광역시: 과학기술연구(대덕연구단지), 10월 대전 사이언스페스티벌</li>
+      <li>관광·축제: 공주·부여(백제 문화제), 단양(단양 8경), 보령(머드축제·외국인 많이 참여), 청남대(대통령 별장·개방·인터넷 예약)</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">48</span>전라지역</summary><div class="body">
+    <ul>
+      <li>전라도 = 전주+나주 → 호남지역. 갯벌·평야 발달 → 음식문화·문화(소리·민요) 발달</li>
+      <li>농업·수산업 발달</li>
+      <li>광주광역시: 전라도에서 가장 큰 도시, 공업 발달</li>
+      <li>전주: 음식(전주비빔밥), 한옥마을, 세계소리축제</li>
+      <li>여수: 2012년 세계엑스포 개최</li>
+      <li>고인돌: 고창·화순 (고조선 청동기 시대 무덤)</li>
+      <li>공업도시: 김제 새만금·목포항·광주광역시</li>
+      <li>관광·축제: 전주 한옥마을, 전주 세계소리축제, 순천 남도음식대잔치, 보성 녹차밭</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">49</span>경상 지역</summary><div class="body">
+    <ul>
+      <li>경상도 = 경주+상주. 영남지역, 동남부</li>
+      <li>공업 발달(대구·울산·부산광역시), 천 년의 신라문화(경주), 유교문화(안동)</li>
+      <li>대구광역시: 분지(매우 덥다), 공업 발달</li>
+      <li>울산광역시: 중화학공업 1위, 자동차·조선소·화학 발달</li>
+      <li>부산광역시: 한국에서 2번째 큰 도시, 1위의 항구도시, 공업·수산업·관광지(광안리·해운대 해수욕장), 국제시장</li>
+      <li>경주: 신라 천 년의 수도, 신라 불교 문화(불국사·석굴암·다보탑·석가탑)</li>
+      <li>안동: 유교 문화(도산서원·하회마을), 안동 탈춤</li>
+      <li>합천 해인사: 팔만대장경(목판인쇄)</li>
+      <li>통영: 이순신 장군 기념(통영한산대첩축제). 울릉도·독도 = 경상도 지역</li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">50</span>강원·제주 지역</summary><div class="body">
+    <ul>
+      <li><span class="k">강원도</span>: 태백산맥 중심 — 동쪽=영동지방, 서쪽=영서지방. 밭농사·목축업·관광지(산·바다·해수욕장). 동해(깊고 해수욕장 발달, 섬 없음). 평창: 2018년 동계올림픽 개최. 관광=설악산, 강릉 오죽헌·단오제, 정동진 일출</li>
+      <li><span class="k">제주도</span>: 한국에서 가장 큰 섬, 화산섬, 삼다도, 탐라국, <span class="hl">유네스코 세계자연유산</span>. 밭농사·어업·해녀(유네스코 세계무형문화유산)·관광지·화산-동굴(만장굴)·주상절리. 한라산=한국에서 제일 높은 산(1950m). 삼다도=바람·돌·여자 많음
+        <ul><li>여자 많은 이유: 남자들은 고기 잡으러 바다에 나갔다 많이 죽음 → 여자가 가장이 되어 해녀 하며 가족 책임</li></ul>
+      </li>
+    </ul>
+  </div></details>
+
+  <details><summary><span class="num">⊞</span>한국 역사 연대표 (요약표)</summary><div class="body">
+    <table>
+      <tr><th>나라</th><th>세운 왕</th><th>유명한 왕</th><th>유명한 사람</th><th>한 일</th></tr>
+      <tr><td>고조선</td><td>단군왕검</td><td>—</td><td>—</td><td>B.C 2333 건국, 8조법</td></tr>
+      <tr><td>고구려</td><td>주몽</td><td>광개토대왕</td><td>을지문덕(살수대첩)</td><td>5세기 전성기, 땅 가장 넓음</td></tr>
+      <tr><td>백제</td><td>온조</td><td>—</td><td>계백</td><td>4세기 전성기, 일본과 교류</td></tr>
+      <tr><td>신라</td><td>박혁거세</td><td>진흥왕</td><td>김유신</td><td>6세기, 삼국통일</td></tr>
+      <tr><td>통일신라</td><td>—</td><td>—</td><td>—</td><td>불교 문화(불국사·석굴암·첨성대)</td></tr>
+      <tr><td>발해</td><td>대조영</td><td>—</td><td>—</td><td>고구려 계승, 남북국시대</td></tr>
+      <tr><td>고려</td><td>왕건</td><td>—</td><td>강감찬·서희</td><td>고려청자, 직지심체요절(금속활자)</td></tr>
+      <tr><td>조선</td><td>이성계(태조)</td><td>세종대왕</td><td>이순신·이황·이이</td><td>훈민정음, 경복궁</td></tr>
+      <tr><td>일제시대</td><td>—</td><td>—</td><td>안중근·유관순·윤봉길</td><td>3.1운동, 독립운동</td></tr>
+    </table>
+  </div></details>
+
+  <p class="note">※ 모든 내용은 첨부된 강의 슬라이드(KIIP 사회통합프로그램)를 그대로 정리한 것입니다. 시험 전 빠르게 훑어보기 좋게 핵심 키워드는 색으로 표시했습니다.</p>
+</section>
+
+<!-- ===================== QUIZ ===================== -->
+<section id="quiz">
+  <div class="qcontrols">
+    <label>분야:
+      <select id="catFilter" onchange="buildQuiz()">
+        <option value="all">전체</option>
+        <option value="사회">사회</option>
+        <option value="정치">정치</option>
+        <option value="경제">경제</option>
+        <option value="법">법</option>
+        <option value="역사">역사</option>
+        <option value="지리">지리·문화유산</option>
+      </select>
+    </label>
+    <button class="primary" onclick="buildQuiz()">🔄 새 문제 / 섞기</button>
+    <span id="progress" class="note"></span>
+  </div>
+  <div id="quizList"></div>
+</section>
+</div>
+
+<div class="score" id="scoreBar">점수: 0 / 0</div>
+<button class="scrollbtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function showTab(t){
+  document.getElementById('study').style.display = t==='study'?'block':'none';
+  document.getElementById('quiz').style.display  = t==='quiz'?'block':'none';
+  document.getElementById('tab-study').classList.toggle('active',t==='study');
+  document.getElementById('tab-quiz').classList.toggle('active',t==='quiz');
+  document.getElementById('scoreBar').style.display = t==='quiz'?'block':'none';
+  if(t==='quiz' && !document.getElementById('quizList').hasChildNodes()) buildQuiz();
+  window.scrollTo({top:0});
+}
+document.getElementById('scoreBar').style.display='none';
+
+function filterStudy(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  document.querySelectorAll('#study details').forEach(d=>{
+    const txt=d.textContent.toLowerCase();
+    const show = !q || txt.includes(q);
+    d.style.display = show?'':'none';
+    if(q && show) d.open=true;
+  });
+}
+
+/* ---------- QUIZ DATA ---------- */
+const QUESTIONS = [
+ // 사회
+ {c:'사회',q:'한국의 공식 국가명은?',o:['한국','대한민국','조선민주주의인민공화국','고려'],a:1,e:'공식 국가명은 대한민국(Republic of Korea).'},
+ {c:'사회',q:'한국의 국화(나라꽃)는?',o:['진달래','무궁화','벚꽃','개나리'],a:1,e:'무궁화 — 끝이 없이 계속 피는 꽃.'},
+ {c:'사회',q:'한글을 만든 왕은?',o:['세종대왕','태종','광개토대왕','정조'],a:0,e:'세종대왕이 훈민정음(한글)을 창제. 한글날 10월 9일.'},
+ {c:'사회',q:'한국에서 노동을 시작할 수 있는 나이는?',o:['만 13세','만 15세','만 18세','만 20세'],a:1,e:'만 15세부터 노동 가능.'},
+ {c:'사회',q:'주 5일제 근무에서 추가 포함 최대 근로시간은?',o:['40시간','48시간','52시간','60시간'],a:2,e:'기본 40시간 + 추가 12시간 = 주 52시간.'},
+ {c:'사회',q:'현재 한국에서 가장 많은 가족 형태는?',o:['확대가족','핵가족','대가족','공동체가족'],a:1,e:'부모+미혼 자녀로 구성된 핵가족.'},
+ {c:'사회',q:'부모와 자녀 사이의 촌수는?',o:['1촌','2촌','3촌','무촌'],a:0,e:'부모-자녀=1촌, 형제자매=2촌. 부부는 무촌.'},
+ {c:'사회',q:'보증금을 내고 매달 돈을 내지 않는 한국 고유의 주거 형태는?',o:['월세','전세','반전세','자가'],a:1,e:'전세 = 보증금만 내고 2년 거주. 한국에만 있음.'},
+ {c:'사회',q:'전입신고는 며칠 이내에 해야 하는가?',o:['7일','14일','30일','90일'],a:1,e:'전입신고·체류지변경신고는 14일 이내.'},
+ {c:'사회',q:'도시화로 현재 한국 인구의 약 몇 %가 도시에 사는가?',o:['50%','70%','90%','100%'],a:2,e:'약 90%가 도시에 거주.'},
+ {c:'사회',q:'국민 모두가 가입하는 복지제도는?',o:['공공부조','사회보험','긴급복지지원','기초생활보장'],a:1,e:'사회보험(건강보험·국민연금·고용보험·산재보험)은 국민 모두 대상.'},
+ {c:'사회',q:'외국인종합안내센터(통역 서비스) 전화번호는?',o:['1345','1372','119','118'],a:0,e:'1345 = 외국인종합안내센터.'},
+ {c:'사회',q:'질병 예방 등 국민을 위한 공공 보건 기관은?',o:['동네의원','보건소','종합병원','한의원'],a:1,e:'보건소 = 질병 예방 등 공공 보건 기관.'},
+ {c:'사회',q:'만 3세~만 5세, 교육부가 관할하는 보육기관은?',o:['어린이집','유치원','초등학교','보건소'],a:1,e:'유치원=교육부(만3~5세). 어린이집=보건복지부(만0~5세).'},
+ {c:'사회',q:'한국에서 의무교육이 아닌 학교는?',o:['초등학교','중학교','고등학교','없음'],a:2,e:'초·중학교는 의무교육, 고등학교는 의무가 아님.'},
+ {c:'사회',q:'대학수학능력시험(수능)은 보통 몇 월에 치르는가?',o:['9월','10월','11월','12월'],a:2,e:'수능은 11월에 실시.'},
+ {c:'사회',q:'설날 음식으로 장수를 의미하는 것은?',o:['송편','떡국','미역국','잡채'],a:1,e:'설날=떡국(장수·건강). 추석=송편.'},
+ {c:'사회',q:'추석은 음력 며칠인가?',o:['1월 1일','5월 5일','8월 15일','10월 3일'],a:2,e:'추석=음력 8월 15일(한가위·가배).'},
+ {c:'사회',q:'마을 사람들이 힘을 모아 공동으로 농사일을 하는 전통 조직은?',o:['두레','품앗이','향우회','동창회'],a:0,e:'두레=공동 농사 조직. 품앗이=교환노동.'},
+ {c:'사회',q:'유교를 가르치던 삼국시대의 교육기관은?',o:['서원','향교','성균관','절'],a:1,e:'향교 = 유교를 가르치는 교육기관.'},
+ {c:'사회',q:'한국의 대중문화가 외국으로 수출되는 현상을 무엇이라 하는가?',o:['한식','한류','한복','한옥'],a:1,e:'한류 = K-POP·드라마·영화·K뷰티 등 수출.'},
+ {c:'사회',q:'성년식(성인이 되는 것 축하)은 몇 세를 기준으로 하는가?',o:['만 18세','만 19세','만 20세','만 21세'],a:1,e:'만 19세 성인. 5월 셋째 월요일.'},
+ // 정치
+ {c:'정치',q:'삼권분립의 세 기관이 아닌 것은?',o:['입법부','행정부','사법부','언론부'],a:3,e:'입법부(국회)·행정부(정부)·사법부(법원).'},
+ {c:'정치',q:'법을 만드는 기관(입법부)은?',o:['국회','정부','법원','청와대'],a:0,e:'입법부=국회(법 제정).'},
+ {c:'정치',q:'국회의원의 임기와 총 인원은?',o:['4년·300명','5년·200명','4년·250명','5년·300명'],a:0,e:'국회의원=4년, 300명(지역구+비례대표).'},
+ {c:'정치',q:'대통령의 임기는?',o:['4년 중임','5년 단임','6년 단임','4년 단임'],a:1,e:'대통령=5년 단임제(1번만).'},
+ {c:'정치',q:'재판을 담당하는 기관은?',o:['입법부','행정부','사법부','국무회의'],a:2,e:'사법부=법원(재판, 법률 적용).'},
+ {c:'정치',q:'한국의 삼심제도 순서로 옳은 것은?',o:['대법원→고등법원→지방법원','지방법원→고등법원→대법원','고등법원→지방법원→대법원','지방법원→대법원→고등법원'],a:1,e:'지방법원→고등법원→대법원(3번).'},
+ {c:'정치',q:'"죄가 없다고 생각한다"는 피의자 보호 원칙은?',o:['미란다원칙','무죄추정원칙','죄형법정주의','삼심제도'],a:1,e:'무죄추정원칙.'},
+ {c:'정치',q:'지방선거에 외국인이 참여하려면? (영주권)',o:['영주권 1년','영주권 3년·만18세 이상','국적 취득 필수','참여 불가'],a:1,e:'영주권 3년 이상·만18세 이상 외국인은 지방선거 참여 가능.'},
+ {c:'정치',q:'선거의 4원칙이 아닌 것은?',o:['보통선거','평등선거','공개선거','비밀선거'],a:2,e:'보통·평등·직접·비밀선거. 비밀선거이므로 공개X.'},
+ {c:'정치',q:'이승만 정권의 부정선거에 맞선 사건은?',o:['4.19혁명','5.18민주화운동','6월항쟁','3.1운동'],a:0,e:'4.19혁명=이승만 부정선거에 저항.'},
+ {c:'정치',q:'대통령 직선제를 이끌어낸 1987년 사건은?',o:['4.19혁명','5.18민주화운동','6월항쟁','유신헌법'],a:2,e:'6월항쟁(1987)→대통령 직선제 실시.'},
+ {c:'정치',q:'국회가 정부를 잘 감시하는지 감사하는 활동은?',o:['인사청문회','국정감사','국무회의','총선'],a:1,e:'국정감사=매년 9~11월, 국회가 행정부 감사.'},
+ // 경제
+ {c:'경제',q:'한국전쟁 후 빠른 경제 성장을 무엇이라 부르는가?',o:['라인강의 기적','한강의 기적','동방의 기적','서울의 기적'],a:1,e:'한강의 기적 — 세계 12위 경제대국.'},
+ {c:'경제',q:'1970년대 한국의 주력 수출 산업은?',o:['옷·가발','기계·철강','반도체','자동차'],a:1,e:'1970년대=기계·철강. 1980년대=자동차·화학.'},
+ {c:'경제',q:'한국이 세계 최초로 이룬 변화는?',o:['핵 보유국','원조받던 나라→원조하는 나라','우주강국','인구 1위'],a:1,e:'원조받던 나라에서 원조하는 나라로 바뀐 최초의 나라.'},
+ {c:'경제',q:'소비자 피해 상담을 도와주는 기관(전화)은?',o:['1345','1372','118','110'],a:1,e:'한국소비자원 1372.'},
+ {c:'경제',q:'24시간 운영하고 젊은 사람이 많이 이용하는 상점은?',o:['전통시장','편의점','백화점','정기시장'],a:1,e:'편의점=24시간, 젊은 사람 이용.'},
+ {c:'경제',q:'화폐를 만드는 곳은?',o:['시중은행','한국은행','저축은행','새마을금고'],a:1,e:'한국은행이 화폐를 만듦.'},
+ {c:'경제',q:'은행 업무 시간은?',o:['9시~4시','9시~6시','10시~5시','8시~5시'],a:0,e:'은행 업무: 오전 9시~오후 4시.'},
+ {c:'경제',q:'취업 시 임금·근로조건·휴일을 정하는 서류는?',o:['이력서','근로계약서','구인광고','자격증'],a:1,e:'근로계약서.'},
+ // 법
+ {c:'법',q:'외국인이 입국할 때 반드시 필요한 두 가지는?',o:['여권+비자','여권+외국인등록증','비자+운전면허','여권+재직증명서'],a:0,e:'여권(신분증명)+비자(=사증, 입국 허가서).'},
+ {c:'법',q:'장기체류 외국인은 며칠 이내 외국인등록을 해야 하는가?',o:['14일','30일','60일','90일'],a:3,e:'90일 이내 출입국·외국인청에서 외국인등록.'},
+ {c:'법',q:'세계인의 날은 언제인가?',o:['5월 20일','5월 5일','10월 3일','8월 15일'],a:0,e:'세계인의 날 = 5월 20일.'},
+ {c:'법',q:'외국인 인권 침해를 당했을 때 신고하는 곳은?',o:['국가인권위원회','국세청','출입국청','법원'],a:0,e:'국가인권위원회에 신고.'},
+ {c:'법',q:'혼인신고를 한 부부를 무엇이라 하는가?',o:['사실혼','법률혼','동거','별산'],a:1,e:'법률혼=혼인신고O. 사실혼=혼인신고X.'},
+ {c:'법',q:'자녀 출생신고는 며칠 이내에 해야 하는가?',o:['7일','1개월','3개월','1년'],a:1,e:'출생신고는 1개월 이내 행정복지센터에 신고.'},
+ {c:'법',q:'학교폭력 신고 전화번호는?',o:['112','117','119','110'],a:1,e:'학교폭력=117(경찰청 사이버 안전국).'},
+ {c:'법',q:'금전거래에서 법으로 정한 이자의 상한은?',o:['연 10%','연 15%','연 24%','연 30%'],a:2,e:'이자는 연 24%를 넘으면 안 됨.'},
+ {c:'법',q:'안전한 부동산 거래를 위해 반드시 확인할 서류는?',o:['주민등록등본','등기부등본','가족관계증명서','재직증명서'],a:1,e:'등기부등본 확인 + 공인중개사 통해 거래.'},
+ {c:'법',q:'범죄와 형벌을 법으로 미리 정해야 처벌할 수 있다는 원칙은?',o:['무죄추정원칙','죄형법정주의','미란다원칙','삼심제도'],a:1,e:'죄형법정주의.'},
+ {c:'법',q:'1차 수사를 담당하며 112 신고를 받는 기관은?',o:['검찰','경찰','법원','공수처'],a:1,e:'경찰=1차 수사, 112. 검찰=2차 수사·기소.'},
+ {c:'법',q:'사형은 어떤 종류의 형벌인가?',o:['생명형','자유형','재산형','자격형'],a:0,e:'생명형=생명을 박탈(사형).'},
+ {c:'법',q:'1심 판결에 불복해 2심을 신청하는 것을 무엇이라 하는가?',o:['상고','항소','기소','항고'],a:1,e:'1심→2심=항소(7일 이내), 2심→3심=상고.'},
+ {c:'법',q:'모르는 것을 물어볼 때 거는 긴급/생활 전화는?',o:['112','119','110','118'],a:2,e:'110=모르는 것 물어볼 때. 112=경찰, 119=응급.'},
+ // 역사
+ {c:'역사',q:'고조선을 건국한 인물은?',o:['주몽','단군왕검','왕건','이성계'],a:1,e:'단군왕검(청동기 시대), 기원전 2333년.'},
+ {c:'역사',q:'개천절은 무슨 날인가?',o:['고조선 건국','한글 반포','광복','3.1운동'],a:0,e:'개천절 10월 3일 = 고조선 건국 기념.'},
+ {c:'역사',q:'고구려를 세운 인물은?',o:['온조','주몽','박혁거세','대조영'],a:1,e:'고구려=주몽(졸본). 백제=온조. 신라=박혁거세.'},
+ {c:'역사',q:'신라와 연합해 삼국을 통일한 나라는?',o:['수나라','당나라','몽골','일본'],a:1,e:'신라+당나라 → 삼국통일.'},
+ {c:'역사',q:'발해를 세운 인물은?',o:['왕건','대조영','이성계','김유신'],a:1,e:'발해=대조영(고구려 유민), 남북국시대.'},
+ {c:'역사',q:'세계 최초의 금속활자로 만든 책은?',o:['팔만대장경','직지심체요절','무구정광대다라니경','삼국유사'],a:1,e:'직지심체요절(고려) — 박병선이 프랑스에서 발견.'},
+ {c:'역사',q:'고려를 건국한 인물은?',o:['왕건','이성계','대조영','주몽'],a:0,e:'고려=왕건(918년).'},
+ {c:'역사',q:'조선을 건국한 인물은?',o:['이방원','이성계','이황','정조'],a:1,e:'조선=태조 이성계(1392년), 유교 이념.'},
+ {c:'역사',q:'수원 화성을 세운 조선의 왕은?',o:['세종','성종','정조','태종'],a:2,e:'정조=수원 화성(유네스코, 거중기 이용).'},
+ {c:'역사',q:'살수대첩으로 수나라를 물리친 고구려 장수는?',o:['을지문덕','서희','이순신','강감찬'],a:0,e:'을지문덕(살수=청천강).'},
+ {c:'역사',q:'거란과 외교 담판으로 강동6주를 얻은 고려 인물은?',o:['을지문덕','서희','이순신','김유신'],a:1,e:'서희=외교로 강동6주 획득.'},
+ {c:'역사',q:'거북선을 만들어 일본 수군을 물리친 인물은?',o:['이순신','안중근','윤봉길','유관순'],a:0,e:'이순신=임진왜란, 거북선.'},
+ {c:'역사',q:'광복절(일제로부터 해방된 날)은?',o:['1945년 8월 15일','1948년 7월 17일','1919년 3월 1일','1950년 6월 25일'],a:0,e:'1945년 8월 15일=광복절.'},
+ {c:'역사',q:'6.25 전쟁(한국전쟁)이 시작된 해는?',o:['1945년','1948년','1950년','1953년'],a:2,e:'1950년 6월 25일 북한 남침. 1953년 정전협정.'},
+ {c:'역사',q:'서울을 되찾은 6.25 전쟁의 작전은?',o:['낙동강 전투','인천상륙작전','1.4후퇴','38선 작전'],a:1,e:'인천상륙작전(UN군)으로 서울 수복.'},
+ {c:'역사',q:'3.1운동(1919)에 참여하고 서대문 형무소에서 순국한 인물은?',o:['유관순','신사임당','허난설헌','김만덕'],a:0,e:'유관순=이화학당, 3.1만세운동.'},
+ {c:'역사',q:'만 원 지폐에 그려진 인물은?',o:['이황','이이','세종대왕','신사임당'],a:2,e:'만원=세종대왕. 천원=이황, 오천원=이이, 오만원=신사임당.'},
+ // 지리·문화유산
+ {c:'지리',q:'한국의 기후 구분은?',o:['열대기후','온대기후','한대기후','건조기후'],a:1,e:'온대기후, 사계절.'},
+ {c:'지리',q:'한국 국토에서 산지가 차지하는 비율은?',o:['45%','55%','65%','75%'],a:2,e:'산지 약 65%, 동고서저 지형.'},
+ {c:'지리',q:'수도권에 해당하지 않는 곳은?',o:['서울','경기도','인천','대전'],a:3,e:'수도권=서울·경기도·인천. 대전=충청.'},
+ {c:'지리',q:'행정 중심 복합 도시로 만들어진 곳은?',o:['세종특별자치시','대전광역시','부산광역시','광주광역시'],a:0,e:'세종특별자치시=행정업무 도시(수도권 인구 집중 해결).'},
+ {c:'지리',q:'전주의 대표 음식은?',o:['비빔밥','냉면','떡갈비','회'],a:0,e:'전주=전주비빔밥, 한옥마을, 세계소리축제.'},
+ {c:'지리',q:'천 년의 신라 문화(불국사·석굴암)가 있는 도시는?',o:['안동','경주','부산','대구'],a:1,e:'경주=신라 천 년의 수도.'},
+ {c:'지리',q:'팔만대장경이 보관된 경상도의 절은?',o:['불국사','해인사','통도사','법주사'],a:1,e:'합천 해인사=팔만대장경(목판인쇄).'},
+ {c:'지리',q:'2018년 동계올림픽이 열린 강원도 지역은?',o:['강릉','평창','속초','춘천'],a:1,e:'평창 동계올림픽(2018).'},
+ {c:'지리',q:'한국에서 가장 높은 산은?',o:['백두산','한라산','설악산','지리산'],a:1,e:'한라산(제주, 1950m)이 한국에서 제일 높은 산.'},
+ {c:'지리',q:'제주도의 삼다(三多)에 해당하지 않는 것은?',o:['바람','돌','여자','나무'],a:3,e:'삼다도=바람·돌·여자가 많음.'},
+ {c:'지리',q:'유교를 공부하던 조선의 사립 학교(유네스코 등재)는?',o:['향교','서원','성균관','국자감'],a:1,e:'서원=유학 공부 학교(병산서원·필암서원, 유네스코).'},
+ {c:'지리',q:'동양에서 가장 오래된 천문대는?',o:['첨성대','석굴암','다보탑','참성단'],a:0,e:'첨성대(신라)=가장 오래된 천문대.'},
+];
+
+let score=0, answered=0, current=[];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildQuiz(){
+  const cat=document.getElementById('catFilter').value;
+  let pool=QUESTIONS.filter(q=>cat==='all'||q.c===cat);
+  current=shuffle([...pool]);
+  score=0;answered=0;updateScore();
+  const list=document.getElementById('quizList');
+  list.innerHTML='';
+  current.forEach((q,i)=>{
+    const opts=q.o.map((t,oi)=>({t,correct:oi===q.a}));
+    const shuffledOpts=shuffle(opts.map((o,idx)=>({...o,idx})));
+    const card=document.createElement('div');card.className='qcard';
+    card.innerHTML=`<div class="qnum">문제 ${i+1} / ${current.length} · <span style="color:var(--accent2)">${q.c}</span></div>
+      <div class="qtext">${q.q}</div>`;
+    shuffledOpts.forEach(o=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=o.t;
+      b.onclick=()=>{
+        if(card.dataset.done)return;card.dataset.done='1';answered++;
+        card.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        if(o.correct){b.classList.add('correct');score++;}
+        else{b.classList.add('wrong');
+          card.querySelectorAll('.opt').forEach(x=>{if(x.textContent===q.o[q.a])x.classList.add('correct');});}
+        card.querySelector('.expl').classList.add('show');
+        updateScore();
+      };
+      card.appendChild(b);
+    });
+    const e=document.createElement('div');e.className='expl';e.innerHTML='💡 '+q.e;
+    card.appendChild(e);
+    list.appendChild(card);
+  });
+  document.getElementById('progress').textContent=`총 ${current.length}문제`;
+  window.scrollTo({top:0});
+}
+function updateScore(){
+  document.getElementById('scoreBar').textContent=`점수: ${score} / ${answered}  (전체 ${current.length}문제)`;
+}
+</script>
+</body>
+</html>
