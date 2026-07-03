@@ -830,6 +830,13 @@
         <option value="지리">지리·문화유산</option>
       </select>
     </label>
+    <label>문제 수:
+      <select id="countFilter" onchange="buildQuiz()">
+        <option value="10">10문제 (10 talik)</option>
+        <option value="20">20문제 (20 talik)</option>
+        <option value="all">전체 (hammasi)</option>
+      </select>
+    </label>
     <button class="primary" onclick="buildQuiz()">🔄 새 문제 / 섞기</button>
     <span id="progress" class="note"></span>
   </div>
@@ -962,8 +969,10 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 
 function buildQuiz(){
   const cat=document.getElementById('catFilter').value;
+  const cnt=document.getElementById('countFilter').value;
   let pool=QUESTIONS.filter(q=>cat==='all'||q.c===cat);
   current=shuffle([...pool]);
+  if(cnt!=='all') current=current.slice(0,parseInt(cnt));
   score=0;answered=0;updateScore();
   const list=document.getElementById('quizList');
   list.innerHTML='';
@@ -994,7 +1003,14 @@ function buildQuiz(){
   window.scrollTo({top:0});
 }
 function updateScore(){
-  document.getElementById('scoreBar').textContent=`점수: ${score} / ${answered}  (전체 ${current.length}문제)`;
+  const bar=document.getElementById('scoreBar');
+  if(current.length>0 && answered===current.length){
+    const pct=Math.round(score/current.length*100);
+    const emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
+    bar.textContent=`${emoji} 완료! 결과: ${score} / ${current.length}  (${pct}%)`;
+  }else{
+    bar.textContent=`점수: ${score} / ${answered}  (전체 ${current.length}문제)`;
+  }
 }
 </script>
 </body>
