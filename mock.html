@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIIP 모의고사 — Mock Test & Flashcards</title>
+<style>
+  :root{
+    --bg:#0f1320; --card:#1a2032; --card2:#222a40; --accent:#4f9cff; --accent2:#ffcf4f;
+    --text:#e8ecf5; --muted:#9aa6c2; --good:#3ddc84; --bad:#ff6b6b; --line:#2e3854;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
+  header{position:sticky;top:0;z-index:50;background:linear-gradient(90deg,#1a2750,#222a40);
+    padding:14px 18px;border-bottom:1px solid var(--line);box-shadow:0 2px 14px rgba(0,0,0,.4)}
+  header h1{margin:0;font-size:18px}
+  header p{margin:3px 0 0;color:var(--muted);font-size:13px}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tabs button,.tabs a{background:var(--card2);color:var(--text);border:1px solid var(--line);
+    padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px;text-decoration:none}
+  .tabs button.active{background:var(--accent);border-color:var(--accent);color:#06122a;font-weight:700}
+  .wrap{max-width:920px;margin:0 auto;padding:18px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  .controls select,.controls button{padding:9px 14px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card2);color:var(--text);font-size:14px;cursor:pointer}
+  .controls button.primary{background:var(--accent);color:#06122a;font-weight:700;border-color:var(--accent)}
+  .progressbar{height:8px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px 0 16px}
+  .progressbar div{height:100%;background:linear-gradient(90deg,var(--accent),var(--good));width:0;transition:width .3s}
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:12px 0}
+  .qnum{color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .qnum .sec{color:var(--accent2)}
+  .qtext{font-weight:700;margin:8px 0 14px;font-size:17px}
+  .opt{display:block;width:100%;text-align:left;padding:12px 14px;margin:8px 0;border-radius:10px;
+    border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:15px;cursor:pointer;line-height:1.5}
+  .opt:not(:disabled):hover{border-color:var(--accent)}
+  .opt.correct{background:rgba(61,220,132,.15);border-color:var(--good);color:var(--good);font-weight:700}
+  .opt.wrong{background:rgba(255,107,107,.15);border-color:var(--bad);color:var(--bad)}
+  .opt:disabled{cursor:default;opacity:.9}
+  .expl{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--card2);
+    border-left:4px solid var(--accent2);font-size:14px;display:none}
+  .navrow{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .navrow button{padding:11px 20px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card2);color:var(--text);font-size:15px;cursor:pointer}
+  .navrow button.primary{background:var(--accent);color:#06122a;font-weight:700;border-color:var(--accent)}
+  .navrow button:disabled{opacity:.4;cursor:default}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin:14px 0}
+  .grid button{padding:8px 0;border-radius:8px;border:1px solid var(--line);background:var(--card2);
+    color:var(--text);cursor:pointer;font-size:13px}
+  .grid button.done-ok{background:rgba(61,220,132,.2);border-color:var(--good);color:var(--good)}
+  .grid button.done-bad{background:rgba(255,107,107,.2);border-color:var(--bad);color:var(--bad)}
+  .grid button.cur{outline:2px solid var(--accent)}
+  .scorebox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;text-align:center}
+  .scorebox .big{font-size:42px;font-weight:800;color:var(--accent)}
+  .scorebox .pass{color:var(--good);font-weight:700}
+  .scorebox .fail{color:var(--bad);font-weight:700}
+  /* Flashcards */
+  .fcard{perspective:1200px;margin:14px 0;cursor:pointer;min-height:320px}
+  .fcard-inner{position:relative;width:100%;min-height:320px;transition:transform .5s;transform-style:preserve-3d}
+  .fcard.flipped .fcard-inner{transform:rotateY(180deg)}
+  .fface{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
+    display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+  .fface.back{transform:rotateY(180deg);border-color:var(--accent)}
+  .fface .hint{color:var(--muted);font-size:12px;text-align:center;margin-top:12px}
+  .fface .fq{font-weight:700;font-size:17px}
+  .fface ol{margin:10px 0 0;padding-left:0;list-style:none;font-size:14px;color:var(--muted)}
+  .fface ol li{margin:4px 0}
+  .fface .fans{color:var(--good);font-weight:800;font-size:18px;margin-bottom:10px}
+  .fface .fexpl{font-size:14px;border-left:4px solid var(--accent2);padding-left:12px}
+  .fmeta{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .fmeta .sec{color:var(--accent2)}
+  @media (max-width:600px){ .fface .fq{font-size:15px} .qtext{font-size:15px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 KIIP 종합평가 모의고사</h1>
+  <p>Mock test va flashcardlar — har kuni yangi test qo'shiladi</p>
+  <div class="tabs">
+    <a href="index.html">← 공부 자료</a>
+    <button id="tab-test" class="active" onclick="showMode('test')">📝 Test</button>
+    <button id="tab-flash" onclick="showMode('flash')">🃏 Flashcard</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <select id="testSelect" onchange="loadTest()"></select>
+    <button class="primary" onclick="restart()">🔄 Boshidan</button>
+    <button id="shuffleBtn" onclick="toggleShuffle()">🔀 Aralashtirish: OFF</button>
+  </div>
+
+  <!-- TEST MODE -->
+  <section id="mode-test">
+    <div class="progressbar"><div id="pbar"></div></div>
+    <div class="grid" id="qgrid"></div>
+    <div id="qarea"></div>
+  </section>
+
+  <!-- FLASHCARD MODE -->
+  <section id="mode-flash" style="display:none">
+    <div class="progressbar"><div id="fbar"></div></div>
+    <div id="farea"></div>
+    <div class="navrow">
+      <button onclick="fprev()">← Oldingi</button>
+      <span id="fcount" style="color:var(--muted)"></span>
+      <button class="primary" onclick="fnext()">Keyingi →</button>
+    </div>
+  </section>
+</div>
+
+<script src="mock-data.js"></script>
+<script>
+const CIRC = ["①","②","③","④"];
+let test = null, order = [], answers = {}, cur = 0, shuffled = false;
+let fIdx = 0, mode = "test";
+
+function init(){
+  const sel = document.getElementById("testSelect");
+  sel.innerHTML = MOCK_TESTS.map((t,i)=>`<option value="${i}">${t.title} (${t.questions.length} savol)</option>`).join("");
+  sel.value = MOCK_TESTS.length - 1;
+  loadTest();
+}
+
+function loadTest(){
+  test = MOCK_TESTS[+document.getElementById("testSelect").value];
+  restart();
+}
+
+function restart(){
+  order = test.questions.map((_,i)=>i);
+  if (shuffled) shuffle(order);
+  answers = {}; cur = 0; fIdx = 0;
+  render(); renderFlash();
+}
+
+function toggleShuffle(){
+  shuffled = !shuffled;
+  document.getElementById("shuffleBtn").textContent = "🔀 Aralashtirish: " + (shuffled?"ON":"OFF");
+  restart();
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function showMode(m){
+  mode = m;
+  document.getElementById("tab-test").classList.toggle("active", m==="test");
+  document.getElementById("tab-flash").classList.toggle("active", m==="flash");
+  document.getElementById("mode-test").style.display = m==="test" ? "" : "none";
+  document.getElementById("mode-flash").style.display = m==="flash" ? "" : "none";
+}
+
+/* ---------- TEST MODE ---------- */
+function render(){
+  const total = order.length, done = Object.keys(answers).length;
+  document.getElementById("pbar").style.width = (done/total*100) + "%";
+
+  const grid = document.getElementById("qgrid");
+  grid.innerHTML = order.map((qi,pos)=>{
+    const q = test.questions[qi];
+    let cls = answers[qi]===undefined ? "" : (answers[qi]===q.answer ? "done-ok" : "done-bad");
+    if (pos===cur) cls += " cur";
+    return `<button class="${cls}" onclick="goTo(${pos})">${q.n}</button>`;
+  }).join("");
+
+  if (done === total){ renderResult(); return; }
+
+  const qi = order[cur], q = test.questions[qi];
+  const answered = answers[qi] !== undefined;
+  document.getElementById("qarea").innerHTML = `
+    <div class="qcard">
+      <div class="qnum"><span>Savol ${q.n} / ${total}</span><span class="sec">${q.sec}</span></div>
+      <div class="qtext">${q.q}</div>
+      ${q.opts.map((o,i)=>{
+        let cls = "";
+        if (answered){
+          if (i===q.answer) cls = "correct";
+          else if (i===answers[qi]) cls = "wrong";
+        }
+        return `<button class="opt ${cls}" ${answered?"disabled":""} onclick="pick(${qi},${i})">${CIRC[i]} ${o}</button>`;
+      }).join("")}
+      <div class="expl" style="display:${answered?"block":"none"}">💡 ${q.expl}</div>
+      <div class="navrow">
+        <button onclick="goTo(${cur-1})" ${cur===0?"disabled":""}>← Oldingi</button>
+        <span style="color:var(--muted)">To'g'ri: <b style="color:var(--good)">${score()}</b> / ${done}</span>
+        <button class="primary" onclick="nextUnanswered()">Keyingi →</button>
+      </div>
+    </div>`;
+}
+
+function pick(qi,i){
+  if (answers[qi]!==undefined) return;
+  answers[qi] = i;
+  render();
+}
+
+function goTo(pos){
+  if (pos<0 || pos>=order.length) return;
+  cur = pos; render();
+}
+
+function nextUnanswered(){
+  const total = order.length;
+  for (let step=1; step<=total; step++){
+    const pos = (cur+step) % total;
+    if (answers[order[pos]]===undefined){ cur = pos; render(); return; }
+  }
+  render();
+}
+
+function score(){
+  return Object.entries(answers).filter(([qi,a])=>test.questions[+qi].answer===a).length;
+}
+
+function renderResult(){
+  const total = order.length, s = score(), pct = Math.round(s/total*100);
+  const wrong = order.filter(qi=>answers[qi]!==test.questions[qi].answer);
+  document.getElementById("qarea").innerHTML = `
+    <div class="scorebox">
+      <div class="big">${s} / ${total}</div>
+      <div>${pct}% — <span class="${pct>=60?"pass":"fail"}">${pct>=60?"O'tdingiz! 합격 🎉":"Yana mashq qiling 불합격"}</span></div>
+      <p style="color:var(--muted);font-size:13px">(종합평가 o'tish chegarasi odatda 60%)</p>
+      <button class="opt" style="text-align:center" onclick="restart()">🔄 Qayta ishlash</button>
+    </div>
+    ${wrong.length ? `<h3 style="color:var(--bad)">❌ Xato qilingan savollar (${wrong.length})</h3>` : ""}
+    ${wrong.map(qi=>{
+      const q = test.questions[qi];
+      return `<div class="qcard">
+        <div class="qnum"><span>Savol ${q.n}</span><span class="sec">${q.sec}</span></div>
+        <div class="qtext">${q.q}</div>
+        <div style="color:var(--bad)">Sizning javob: ${CIRC[answers[qi]]} ${q.opts[answers[qi]]}</div>
+        <div style="color:var(--good);font-weight:700">To'g'ri javob: ${CIRC[q.answer]} ${q.opts[q.answer]}</div>
+        <div class="expl" style="display:block">💡 ${q.expl}</div>
+      </div>`;
+    }).join("")}`;
+}
+
+/* ---------- FLASHCARD MODE ---------- */
+function renderFlash(){
+  const total = order.length;
+  if (fIdx >= total) fIdx = 0;
+  const qi = order[fIdx], q = test.questions[qi];
+  document.getElementById("fbar").style.width = ((fIdx+1)/total*100) + "%";
+  document.getElementById("fcount").textContent = (fIdx+1) + " / " + total;
+  document.getElementById("farea").innerHTML = `
+    <div class="fcard" id="fcard" onclick="this.classList.toggle('flipped')">
+      <div class="fcard-inner">
+        <div class="fface">
+          <div class="fmeta">Savol ${q.n} · <span class="sec">${q.sec}</span></div>
+          <div class="fq">${q.q}</div>
+          <ol>${q.opts.map((o,i)=>`<li>${CIRC[i]} ${o}</li>`).join("")}</ol>
+          <div class="hint">Javobni ko'rish uchun bosing 👆</div>
+        </div>
+        <div class="fface back">
+          <div class="fans">✅ ${CIRC[q.answer]} ${q.opts[q.answer]}</div>
+          <div class="fexpl">💡 ${q.expl}</div>
+          <div class="hint">Savolga qaytish uchun bosing 👆</div>
+        </div>
+      </div>
+    </div>`;
+}
+function fnext(){ fIdx = (fIdx+1) % order.length; renderFlash(); }
+function fprev(){ fIdx = (fIdx-1+order.length) % order.length; renderFlash(); }
+
+document.addEventListener("keydown", e=>{
+  if (mode!=="flash") return;
+  if (e.key==="ArrowRight") fnext();
+  else if (e.key==="ArrowLeft") fprev();
+  else if (e.key===" "){ e.preventDefault(); document.getElementById("fcard").classList.toggle("flipped"); }
+});
+
+init();
+</script>
+</body>
+</html>
