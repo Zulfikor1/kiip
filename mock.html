@@ -81,6 +81,7 @@
     <a href="index.html">← 공부 자료</a>
     <button id="tab-test" class="active" onclick="showMode('test')">📝 Test</button>
     <button id="tab-flash" onclick="showMode('flash')">🃏 Flashcard</button>
+    <button id="tab-vocab" onclick="showMode('vocab')">📚 So'z bilimi</button>
   </div>
 </header>
 
@@ -108,9 +109,22 @@
       <button class="primary" onclick="fnext()">Keyingi →</button>
     </div>
   </section>
+
+  <!-- SO'Z BILIMI (VOCAB QUIZ) -->
+  <section id="mode-vocab" style="display:none">
+    <div class="controls">
+      <select id="vocabSetSelect" onchange="loadVocabSet()"></select>
+      <button class="primary" onclick="restartVocab()">🔄 Boshidan</button>
+      <button id="vocabDirBtn" onclick="toggleVocabDir()">🇰🇷→🇺🇿 Ma'nosini top</button>
+    </div>
+    <div class="progressbar"><div id="vpbar"></div></div>
+    <div class="grid" id="vgrid"></div>
+    <div id="varea"></div>
+  </section>
 </div>
 
 <script src="mock-data.js"></script>
+<script src="vocab-data.js"></script>
 <script>
 const CIRC = ["①","②","③","④"];
 let test = null, order = [], answers = {}, cur = 0, shuffled = false;
@@ -121,6 +135,7 @@ function init(){
   sel.innerHTML = MOCK_TESTS.map((t,i)=>`<option value="${i}">${t.title} (${t.questions.length} savol)</option>`).join("");
   sel.value = MOCK_TESTS.length - 1;
   loadTest();
+  if (typeof VOCAB_SETS !== "undefined") initVocab();
 }
 
 function loadTest(){
@@ -147,8 +162,10 @@ function showMode(m){
   mode = m;
   document.getElementById("tab-test").classList.toggle("active", m==="test");
   document.getElementById("tab-flash").classList.toggle("active", m==="flash");
+  document.getElementById("tab-vocab").classList.toggle("active", m==="vocab");
   document.getElementById("mode-test").style.display = m==="test" ? "" : "none";
   document.getElementById("mode-flash").style.display = m==="flash" ? "" : "none";
+  document.getElementById("mode-vocab").style.display = m==="vocab" ? "" : "none";
 }
 
 /* ---------- TEST MODE ---------- */
@@ -262,6 +279,123 @@ function renderFlash(){
 }
 function fnext(){ fIdx = (fIdx+1) % order.length; renderFlash(); }
 function fprev(){ fIdx = (fIdx-1+order.length) % order.length; renderFlash(); }
+
+/* ---------- SO'Z BILIMI (VOCAB QUIZ) ---------- */
+let vDir = "ko2uz", vWords = [], vQuestions = [], vAnswers = {}, vCur = 0;
+
+function initVocab(){
+  const sel = document.getElementById("vocabSetSelect");
+  sel.innerHTML = VOCAB_SETS.map((s,i)=>`<option value="${i}">${s.title} (${s.words.length} so'z)</option>`).join("");
+  loadVocabSet();
+}
+
+function loadVocabSet(){
+  vWords = VOCAB_SETS[+document.getElementById("vocabSetSelect").value].words;
+  restartVocab();
+}
+
+function restartVocab(){
+  const idx = vWords.map((_,i)=>i);
+  shuffle(idx);
+  vQuestions = idx.map(wi=>{
+    const others = vWords.map((_,i)=>i).filter(i=>i!==wi);
+    shuffle(others);
+    const opts = [wi,...others.slice(0,3)];
+    shuffle(opts);
+    return {wi, opts};
+  });
+  vAnswers = {}; vCur = 0;
+  renderVocab();
+}
+
+function toggleVocabDir(){
+  vDir = vDir==="ko2uz" ? "uz2ko" : "ko2uz";
+  document.getElementById("vocabDirBtn").textContent =
+    vDir==="ko2uz" ? "🇰🇷→🇺🇿 Ma'nosini top" : "🇺🇿→🇰🇷 Koreyscha top";
+  restartVocab();
+}
+
+function renderVocab(){
+  const total = vQuestions.length, done = Object.keys(vAnswers).length;
+  document.getElementById("vpbar").style.width = (done/total*100)+"%";
+
+  document.getElementById("vgrid").innerHTML = vQuestions.map((_,pos)=>{
+    let cls = vAnswers[pos]===undefined ? "" : (vAnswers[pos].ok ? "done-ok" : "done-bad");
+    if (pos===vCur) cls += " cur";
+    return `<button class="${cls}" onclick="vGoTo(${pos})">${pos+1}</button>`;
+  }).join("");
+
+  if (done===total){ renderVocabResult(); return; }
+
+  const {wi, opts} = vQuestions[vCur];
+  const word = vWords[wi];
+  const answered = vAnswers[vCur]!==undefined;
+  const qText = vDir==="ko2uz" ? word.ko : word.uz;
+
+  document.getElementById("varea").innerHTML = `
+    <div class="qcard">
+      <div class="qnum"><span>So'z ${vCur+1} / ${total}</span></div>
+      <div class="qtext" style="font-size:26px;text-align:center;padding:16px 0;letter-spacing:.5px">${qText}</div>
+      ${opts.map((oi,i)=>{
+        const optText = vDir==="ko2uz" ? vWords[oi].uz : vWords[oi].ko;
+        const isCorrect = oi===wi;
+        let cls="";
+        if(answered){ if(isCorrect) cls="correct"; else if(vAnswers[vCur].picked===i) cls="wrong"; }
+        return `<button class="opt ${cls}" ${answered?"disabled":""} onclick="pickVocab(${vCur},${i},${isCorrect?1:0})">${CIRC[i]} ${optText}</button>`;
+      }).join("")}
+      ${answered ? `<div class="expl" style="display:block">💡 <b>${word.ko}</b> — ${word.uz}</div>` : ""}
+      <div class="navrow">
+        <button onclick="vGoTo(${vCur-1})" ${vCur===0?"disabled":""}>← Oldingi</button>
+        <span style="color:var(--muted)">To'g'ri: <b style="color:var(--good)">${vScore()}</b> / ${done}</span>
+        <button class="primary" onclick="vNext()">Keyingi →</button>
+      </div>
+    </div>`;
+}
+
+function pickVocab(pos, optIdx, isCorrect){
+  if (vAnswers[pos]!==undefined) return;
+  vAnswers[pos] = {picked:optIdx, ok:!!isCorrect};
+  renderVocab();
+}
+
+function vGoTo(pos){
+  if (pos<0||pos>=vQuestions.length) return;
+  vCur=pos; renderVocab();
+}
+
+function vNext(){
+  const total=vQuestions.length;
+  for(let s=1;s<=total;s++){
+    const p=(vCur+s)%total;
+    if(vAnswers[p]===undefined){vCur=p;renderVocab();return;}
+  }
+  renderVocab();
+}
+
+function vScore(){
+  return Object.values(vAnswers).filter(a=>a.ok).length;
+}
+
+function renderVocabResult(){
+  const total=vQuestions.length, s=vScore(), pct=Math.round(s/total*100);
+  const wrong=vQuestions.map((_,i)=>i).filter(i=>!vAnswers[i]?.ok);
+  document.getElementById("varea").innerHTML = `
+    <div class="scorebox">
+      <div class="big">${s} / ${total}</div>
+      <div>${pct}% — <span class="${pct>=80?"pass":"fail"}">${pct>=80?"Ajoyib! 🎉":"Yana mashq qiling 💪"}</span></div>
+      <button class="opt" style="text-align:center;margin-top:14px" onclick="restartVocab()">🔄 Qayta ishlash</button>
+    </div>
+    ${wrong.length ? `<h3 style="color:var(--bad);margin-top:20px">❌ Xato qilingan so'zlar (${wrong.length})</h3>` : ""}
+    ${wrong.map(i=>{
+      const {wi,opts}=vQuestions[i], word=vWords[wi];
+      const pickedWord=vWords[opts[vAnswers[i].picked]];
+      return `<div class="qcard">
+        <div class="qtext" style="font-size:22px">${vDir==="ko2uz"?word.ko:word.uz}</div>
+        <div style="color:var(--bad);margin:6px 0">Sizning javob: ${vDir==="ko2uz"?pickedWord.uz:pickedWord.ko}</div>
+        <div style="color:var(--good);font-weight:700">To'g'ri: <b>${word.ko}</b> — ${word.uz}</div>
+      </div>`;
+    }).join("")}`;
+}
 
 document.addEventListener("keydown", e=>{
   if (mode!=="flash") return;
