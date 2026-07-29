@@ -71,6 +71,18 @@
   .fmeta{color:var(--muted);font-size:13px;margin-bottom:6px}
   .fmeta .sec{color:var(--accent2)}
   @media (max-width:600px){ .fface .fq{font-size:15px} .qtext{font-size:15px} }
+  /* Grammatika */
+  .gcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0}
+  .gform{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:.3px}
+  .gmean{margin:8px 0 12px;font-size:16px;color:var(--text)}
+  .guse{background:var(--card2);border-radius:9px;padding:10px 13px;font-size:14px;color:var(--muted);margin-bottom:12px}
+  .guse b{color:var(--accent2)}
+  .gex{display:flex;flex-direction:column;gap:8px}
+  .gexrow{border-left:4px solid var(--good);padding:6px 0 6px 12px}
+  .gexrow .gko{display:block;font-size:16px;font-weight:600;color:var(--text)}
+  .gexrow .guz{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+  .gtip{margin-top:12px;padding:10px 13px;border-radius:9px;background:rgba(255,207,79,.12);
+    border-left:4px solid var(--accent2);font-size:14px}
 </style>
 </head>
 <body>
@@ -82,11 +94,12 @@
     <button id="tab-test" class="active" onclick="showMode('test')">📝 Test</button>
     <button id="tab-flash" onclick="showMode('flash')">🃏 Flashcard</button>
     <button id="tab-vocab" onclick="showMode('vocab')">📚 So'z bilimi</button>
+    <button id="tab-grammar" onclick="showMode('grammar')">📖 Grammatika</button>
   </div>
 </header>
 
 <div class="wrap">
-  <div class="controls">
+  <div class="controls" id="sharedControls">
     <select id="testSelect" onchange="loadTest()"></select>
     <button class="primary" onclick="restart()">🔄 Boshidan</button>
     <button id="shuffleBtn" onclick="toggleShuffle()">🔀 Aralashtirish: OFF</button>
@@ -121,10 +134,19 @@
     <div class="grid" id="vgrid"></div>
     <div id="varea"></div>
   </section>
+
+  <!-- GRAMMATIKA (O'QUV BO'LIMI) -->
+  <section id="mode-grammar" style="display:none">
+    <div class="controls">
+      <select id="grammarSetSelect" onchange="renderGrammar()"></select>
+    </div>
+    <div id="garea"></div>
+  </section>
 </div>
 
 <script src="mock-data.js"></script>
 <script src="vocab-data.js"></script>
+<script src="grammar-data.js"></script>
 <script>
 const CIRC = ["①","②","③","④"];
 let test = null, order = [], answers = {}, cur = 0, shuffled = false;
@@ -136,6 +158,7 @@ function init(){
   sel.value = MOCK_TESTS.length - 1;
   loadTest();
   if (typeof VOCAB_SETS !== "undefined") initVocab();
+  if (typeof GRAMMAR_SETS !== "undefined") initGrammar();
 }
 
 function loadTest(){
@@ -163,9 +186,12 @@ function showMode(m){
   document.getElementById("tab-test").classList.toggle("active", m==="test");
   document.getElementById("tab-flash").classList.toggle("active", m==="flash");
   document.getElementById("tab-vocab").classList.toggle("active", m==="vocab");
+  document.getElementById("tab-grammar").classList.toggle("active", m==="grammar");
   document.getElementById("mode-test").style.display = m==="test" ? "" : "none";
   document.getElementById("mode-flash").style.display = m==="flash" ? "" : "none";
   document.getElementById("mode-vocab").style.display = m==="vocab" ? "" : "none";
+  document.getElementById("mode-grammar").style.display = m==="grammar" ? "" : "none";
+  document.getElementById("sharedControls").style.display = (m==="test"||m==="flash") ? "" : "none";
 }
 
 /* ---------- TEST MODE ---------- */
@@ -395,6 +421,27 @@ function renderVocabResult(){
         <div style="color:var(--good);font-weight:700">To'g'ri: <b>${word.ko}</b> — ${word.uz}</div>
       </div>`;
     }).join("")}`;
+}
+
+/* ---------- GRAMMATIKA (O'QUV BO'LIMI) ---------- */
+function initGrammar(){
+  const sel = document.getElementById("grammarSetSelect");
+  sel.innerHTML = GRAMMAR_SETS.map((s,i)=>`<option value="${i}">${s.title}</option>`).join("");
+  renderGrammar();
+}
+
+function renderGrammar(){
+  const set = GRAMMAR_SETS[+document.getElementById("grammarSetSelect").value];
+  document.getElementById("garea").innerHTML = set.items.map(g=>`
+    <div class="gcard">
+      <div class="gform">${g.form}</div>
+      <div class="gmean">${g.meaning}</div>
+      <div class="guse"><b>Qoida:</b> ${g.usage}</div>
+      <div class="gex">
+        ${g.ex.map(e=>`<div class="gexrow"><span class="gko">${e.ko}</span><span class="guz">${e.uz}</span></div>`).join("")}
+      </div>
+      ${g.tip ? `<div class="gtip">${g.tip}</div>` : ""}
+    </div>`).join("");
 }
 
 document.addEventListener("keydown", e=>{
