@@ -83,6 +83,20 @@
   .gexrow .guz{display:block;font-size:14px;color:var(--muted);margin-top:2px}
   .gtip{margin-top:12px;padding:10px 13px;border-radius:9px;background:rgba(255,207,79,.12);
     border-left:4px solid var(--accent2);font-size:14px}
+  /* To'ldirish (fill-in-the-blank) */
+  .fillcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+  .fillhead{font-weight:800;font-size:16px;color:var(--accent2);margin-bottom:12px}
+  .fillline{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:16px;line-height:2.1}
+  .fillline:first-of-type{border-top:none}
+  .filltext{flex:1}
+  .blank{display:inline-block;min-width:70px;text-align:center;border-bottom:2px solid var(--accent);
+    color:transparent;padding:0 8px;margin:0 2px;font-weight:700;cursor:pointer;user-select:none;
+    border-radius:4px 4px 0 0;transition:background .2s}
+  .blank:hover{background:rgba(79,156,255,.12)}
+  .blank.shown{color:var(--good);border-bottom-color:var(--good);background:rgba(61,220,132,.14);cursor:default}
+  .fillbtn{flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card2);color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;margin-top:6px}
+  .fillbtn:hover{border-color:var(--accent);color:var(--text)}
 </style>
 </head>
 <body>
@@ -95,6 +109,7 @@
     <button id="tab-flash" onclick="showMode('flash')">🃏 Flashcard</button>
     <button id="tab-vocab" onclick="showMode('vocab')">📚 So'z bilimi</button>
     <button id="tab-grammar" onclick="showMode('grammar')">📖 Grammatika</button>
+    <button id="tab-fill" onclick="showMode('fill')">✏️ To'ldirish</button>
   </div>
 </header>
 
@@ -142,11 +157,21 @@
     </div>
     <div id="garea"></div>
   </section>
+
+  <!-- TO'LDIRISH (FILL-IN-THE-BLANK) -->
+  <section id="mode-fill" style="display:none">
+    <div class="controls">
+      <select id="fillSetSelect" onchange="renderFill()"></select>
+      <button id="fillToggleBtn" class="primary" onclick="toggleFillAll()">👁️ Barcha javoblar</button>
+    </div>
+    <div id="fillarea"></div>
+  </section>
 </div>
 
 <script src="mock-data.js"></script>
 <script src="vocab-data.js"></script>
 <script src="grammar-data.js"></script>
+<script src="fill-data.js"></script>
 <script>
 const CIRC = ["①","②","③","④"];
 let test = null, order = [], answers = {}, cur = 0, shuffled = false;
@@ -159,6 +184,7 @@ function init(){
   loadTest();
   if (typeof VOCAB_SETS !== "undefined") initVocab();
   if (typeof GRAMMAR_SETS !== "undefined") initGrammar();
+  if (typeof FILL_SETS !== "undefined") initFill();
 }
 
 function loadTest(){
@@ -187,10 +213,12 @@ function showMode(m){
   document.getElementById("tab-flash").classList.toggle("active", m==="flash");
   document.getElementById("tab-vocab").classList.toggle("active", m==="vocab");
   document.getElementById("tab-grammar").classList.toggle("active", m==="grammar");
+  document.getElementById("tab-fill").classList.toggle("active", m==="fill");
   document.getElementById("mode-test").style.display = m==="test" ? "" : "none";
   document.getElementById("mode-flash").style.display = m==="flash" ? "" : "none";
   document.getElementById("mode-vocab").style.display = m==="vocab" ? "" : "none";
   document.getElementById("mode-grammar").style.display = m==="grammar" ? "" : "none";
+  document.getElementById("mode-fill").style.display = m==="fill" ? "" : "none";
   document.getElementById("sharedControls").style.display = (m==="test"||m==="flash") ? "" : "none";
 }
 
@@ -442,6 +470,49 @@ function renderGrammar(){
       </div>
       ${g.tip ? `<div class="gtip">${g.tip}</div>` : ""}
     </div>`).join("");
+}
+
+/* ---------- TO'LDIRISH (FILL-IN-THE-BLANK) ---------- */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function initFill(){
+  const sel = document.getElementById("fillSetSelect");
+  sel.innerHTML = FILL_SETS.map((s,i)=>`<option value="${i}">${s.title}</option>`).join("");
+  renderFill();
+}
+
+function renderFill(){
+  const set = FILL_SETS[+document.getElementById("fillSetSelect").value];
+  let n = 0;
+  document.getElementById("fillarea").innerHTML = set.sections.map(sec=>`
+    <div class="fillcard">
+      <div class="fillhead">${esc(sec.heading)}</div>
+      ${sec.lines.map((line,li)=>{
+        const html = line.parts.map(p=>{
+          if (typeof p === "string") return esc(p);
+          const id = "b"+(n++);
+          return `<span class="blank" id="${id}" data-ans="${esc(p.a)}" onclick="revealBlank('${id}')">${esc(p.a)}</span>`;
+        }).join("");
+        return `<div class="fillline">
+          <span class="filltext">${html}</span>
+          <button class="fillbtn" onclick="revealLine(this)">Javob</button>
+        </div>`;
+      }).join("")}
+    </div>`).join("");
+  document.getElementById("fillToggleBtn").textContent = "👁️ Barcha javoblar";
+}
+
+function revealBlank(id){ document.getElementById(id).classList.add("shown"); }
+
+function revealLine(btn){
+  btn.closest(".fillline").querySelectorAll(".blank").forEach(b=>b.classList.add("shown"));
+}
+
+function toggleFillAll(){
+  const blanks = document.querySelectorAll("#fillarea .blank");
+  const anyHidden = [...blanks].some(b=>!b.classList.contains("shown"));
+  blanks.forEach(b=>b.classList.toggle("shown", anyHidden));
+  document.getElementById("fillToggleBtn").textContent = anyHidden ? "🙈 Yashirish" : "👁️ Barcha javoblar";
 }
 
 document.addEventListener("keydown", e=>{
