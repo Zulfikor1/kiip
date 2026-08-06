@@ -84,6 +84,10 @@
   .gtip{margin-top:12px;padding:10px 13px;border-radius:9px;background:rgba(255,207,79,.12);
     border-left:4px solid var(--accent2);font-size:14px}
   /* To'ldirish (fill-in-the-blank) */
+  .subtabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .subtabs button{background:var(--card2);color:var(--text);border:1px solid var(--line);
+    padding:8px 16px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600}
+  .subtabs button.active{background:var(--accent2);border-color:var(--accent2);color:#2a2200;font-weight:800}
   .fillcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
   .fillhead{font-weight:800;font-size:16px;color:var(--accent2);margin-bottom:12px}
   .fillline{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:16px;line-height:2.1}
@@ -160,6 +164,7 @@
 
   <!-- TO'LDIRISH (FILL-IN-THE-BLANK) -->
   <section id="mode-fill" style="display:none">
+    <div id="fillUnitTabs" class="subtabs"></div>
     <div class="controls">
       <select id="fillSetSelect" onchange="renderFill()"></select>
       <button id="fillToggleBtn" class="primary" onclick="toggleFillAll()">👁️ Barcha javoblar</button>
@@ -475,9 +480,26 @@ function renderGrammar(){
 /* ---------- TO'LDIRISH (FILL-IN-THE-BLANK) ---------- */
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
+let fillUnit = null;
+function fillUnitOf(s){ return s.title.split(" ")[0]; }  // "정치 ① ..." -> "정치"
+
 function initFill(){
+  const units = [];
+  FILL_SETS.forEach(s=>{ const u = fillUnitOf(s); if (!units.includes(u)) units.push(u); });
+  fillUnit = units[0];
+  document.getElementById("fillUnitTabs").innerHTML = units.map(u=>
+    `<button data-unit="${u}" onclick="selectFillUnit('${u}')">${u}</button>`).join("");
+  selectFillUnit(fillUnit);
+}
+
+function selectFillUnit(u){
+  fillUnit = u;
+  document.querySelectorAll("#fillUnitTabs button").forEach(b=>
+    b.classList.toggle("active", b.dataset.unit===u));
   const sel = document.getElementById("fillSetSelect");
-  sel.innerHTML = FILL_SETS.map((s,i)=>`<option value="${i}">${s.title}</option>`).join("");
+  sel.innerHTML = FILL_SETS.map((s,i)=>({s,i}))
+    .filter(o=>fillUnitOf(o.s)===u)
+    .map(o=>`<option value="${o.i}">${o.s.title}</option>`).join("");
   renderFill();
 }
 
