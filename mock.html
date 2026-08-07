@@ -101,6 +101,31 @@
   .fillbtn{flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--line);
     background:var(--card2);color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;margin-top:6px}
   .fillbtn:hover{border-color:var(--accent);color:var(--text)}
+  /* Side notes */
+  .notetab{position:fixed;right:0;top:130px;z-index:59;writing-mode:vertical-rl;
+    background:var(--accent2);color:#06122a;border:none;border-radius:10px 0 0 10px;
+    padding:14px 9px;cursor:pointer;font-weight:800;font-size:13px;letter-spacing:1px;
+    box-shadow:-2px 2px 10px rgba(0,0,0,.4)}
+  .notetab.hasnote::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;
+    border-radius:50%;background:var(--good);box-shadow:0 0 0 2px var(--accent2)}
+  .notebody{position:fixed;right:0;top:118px;z-index:61;width:320px;max-width:88vw;
+    max-height:calc(100vh - 140px);display:flex;flex-direction:column;
+    background:var(--card);border:1px solid var(--line);border-right:none;
+    border-radius:12px 0 0 12px;box-shadow:-4px 0 22px rgba(0,0,0,.5);padding:14px;
+    transform:translateX(105%);transition:transform .28s ease}
+  .notepanel:not(.collapsed) .notebody{transform:translateX(0)}
+  .notehead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .notehead #noteLabel{font-weight:700;font-size:14px;color:var(--accent2);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .noteclose{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1}
+  #noteArea{width:100%;flex:1;min-height:220px;resize:vertical;padding:11px 12px;
+    border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--text);
+    font-size:14px;line-height:1.6;font-family:inherit}
+  #noteArea:focus{outline:none;border-color:var(--accent)}
+  .noterow{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .noterow button{padding:9px 16px;border-radius:9px;border:1px solid var(--accent);
+    background:var(--accent);color:#06122a;font-weight:700;font-size:14px;cursor:pointer}
+  .notestatus{color:var(--good);font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
@@ -173,6 +198,22 @@
   </section>
 </div>
 
+<!-- SIDE NOTES -->
+<div id="notePanel" class="notepanel collapsed" style="display:none">
+  <button class="notetab" onclick="toggleNote()">📝 Note</button>
+  <div class="notebody">
+    <div class="notehead">
+      <span id="noteLabel">Note</span>
+      <button class="noteclose" onclick="toggleNote()" title="Yopish">✕</button>
+    </div>
+    <textarea id="noteArea" placeholder="Bu test/dars uchun eslatma yozing..."></textarea>
+    <div class="noterow">
+      <button onclick="saveNote()">💾 Saqlash</button>
+      <span id="noteStatus" class="notestatus"></span>
+    </div>
+  </div>
+</div>
+
 <script src="mock-data.js"></script>
 <script src="vocab-data.js"></script>
 <script src="grammar-data.js"></script>
@@ -195,6 +236,7 @@ function init(){
 function loadTest(){
   test = MOCK_TESTS[+document.getElementById("testSelect").value];
   restart();
+  refreshNote();
 }
 
 function restart(){
@@ -225,6 +267,7 @@ function showMode(m){
   document.getElementById("mode-grammar").style.display = m==="grammar" ? "" : "none";
   document.getElementById("mode-fill").style.display = m==="fill" ? "" : "none";
   document.getElementById("sharedControls").style.display = (m==="test"||m==="flash") ? "" : "none";
+  refreshNote();
 }
 
 /* ---------- TEST MODE ---------- */
@@ -522,6 +565,7 @@ function renderFill(){
       }).join("")}
     </div>`).join("");
   document.getElementById("fillToggleBtn").textContent = "👁️ Barcha javoblar";
+  refreshNote();
 }
 
 function revealBlank(id){ document.getElementById(id).classList.add("shown"); }
@@ -536,6 +580,41 @@ function toggleFillAll(){
   blanks.forEach(b=>b.classList.toggle("shown", anyHidden));
   document.getElementById("fillToggleBtn").textContent = anyHidden ? "🙈 Yashirish" : "👁️ Barcha javoblar";
 }
+
+/* ---- Side notes (per test / per fill set, saqlanadi localStorage) ---- */
+function currentNote(){
+  if (mode==="test" && test)
+    return {key:"kiip_note_test_"+(test.id||test.title), label:"📝 "+test.title};
+  if (mode==="fill" && typeof FILL_SETS!=="undefined"){
+    const sel=document.getElementById("fillSetSelect");
+    const set=sel ? FILL_SETS[+sel.value] : null;
+    if (set) return {key:"kiip_note_fill_"+(set.id||set.title), label:"✏️ "+set.title};
+  }
+  return null;
+}
+function refreshNote(){
+  const panel=document.getElementById("notePanel");
+  if (!panel) return;
+  const info=currentNote();
+  if (!info){ panel.style.display="none"; return; }
+  panel.style.display="";
+  panel.dataset.key=info.key;
+  document.getElementById("noteLabel").textContent=info.label;
+  const val=localStorage.getItem(info.key)||"";
+  document.getElementById("noteArea").value=val;
+  panel.querySelector(".notetab").classList.toggle("hasnote", !!val.trim());
+  document.getElementById("noteStatus").textContent="";
+}
+function saveNote(){
+  const panel=document.getElementById("notePanel");
+  const key=panel.dataset.key; if(!key) return;
+  const val=document.getElementById("noteArea").value;
+  if (val.trim()) localStorage.setItem(key,val); else localStorage.removeItem(key);
+  panel.querySelector(".notetab").classList.toggle("hasnote", !!val.trim());
+  const s=document.getElementById("noteStatus"); s.textContent="✓ Saqlandi";
+  setTimeout(()=>{ if(s.textContent==="✓ Saqlandi") s.textContent=""; },2000);
+}
+function toggleNote(){ document.getElementById("notePanel").classList.toggle("collapsed"); }
 
 document.addEventListener("keydown", e=>{
   if (mode!=="flash") return;
